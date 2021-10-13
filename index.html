@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <style>
+
+
+    </style>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+    <form id="form" action="" method="get">
+        Nazwa gracza:
+        <input type="text" id="nickname" class="">
+        <br /><br />
+        <input name="" id="dolaczDoGry" class="btn btn-primary" type="button" value="Dołącz do gry">
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        var form = document.getElementById('form');
+        var input = document.getElementById('input');
+
+        form.addEventListener('dolaczDoGry', function (e) {
+            e.preventDefault();
+            if (nickname.value) {
+                // socket.emit('chat message', input.value);
+                console.log('Dołączono do gry');
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+
+</html>
