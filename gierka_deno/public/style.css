@@ -1,0 +1,22 @@
+.tlo
+{
+    background-image: url(https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/223650/9fa2ed60da1668378b926503766f3d5b186c8ca3.jpg);
+    background-size: 100%;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: black;
+    background-position-x: 50%, center;
+    height: 100vh;
+}
+.nosifer
+{
+    font-family: 'Nosifer';
+}
+.main-color
+{
+    color: rgb(170, 0, 0);
+}
+.bg-main-color
+{
+    background-color: rgb(120, 0, 0);
+}
