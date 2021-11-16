@@ -1,10 +1,11 @@
-import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router,send } from "https://deno.land/x/oak/mod.ts";
 
 // const get1 = JSON.parse(await Deno.readTextFile("./getData.json"));
 // const get2 = JSON.parse(await Deno.readTextFile("./getData2.json"));
 // const post1 = JSON.parse(await Deno.readTextFile("./postData.json"));
 
 const router = new Router();
+
 router
     .get('/',async (ctx) => {
         const body = await Deno.readTextFile(Deno.cwd() + './public/index.html')
@@ -17,9 +18,16 @@ router
     .get('/game/:id',async (ctx) => {
         const body = await Deno.readTextFile(Deno.cwd() + './public/game.html')
         ctx.response.body = body;
+    })
+    .get('/style.css',async (ctx) => {
+        await send(ctx, ctx.request.url.pathname, {
+            root: `${Deno.cwd()}/public`,
+            index: "style.css",
+          });
     });
 
 const app = new Application();
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 console.log('start');
