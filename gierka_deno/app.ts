@@ -19,13 +19,27 @@ router
         const body = await Deno.readTextFile(Deno.cwd() + './public/game.html')
         ctx.response.body = body;
     })
-    .get('/style.css',async (ctx) => {
+    .get('/phaser',async (ctx) => {
+        const body = await Deno.readTextFile(Deno.cwd() + './public/phaser.html')
+        ctx.response.body = body;
+    })
+    .get('/index.css',async (ctx) => {
         await send(ctx, ctx.request.url.pathname, {
             root: `${Deno.cwd()}/public`,
-            index: "style.css",
+            index: "index.css",
           });
-    });
-
+    })
+    .get('/game.js',async (ctx) => {
+        await send(ctx, ctx.request.url.pathname, {
+            root: `${Deno.cwd()}/public`,
+            index: "game.js",
+          });
+    })
+    .get('/public/:path+', async (ctx) => {
+        await send(ctx, ctx.request.url.pathname, {
+          root: Deno.cwd(),
+        });
+      });
 const app = new Application();
 
 app.use(router.routes());
