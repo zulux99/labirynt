@@ -2,12 +2,14 @@ import { serve } from "https://deno.land/std@0.87.0/http/server.ts";
 import { acceptWebSocket,acceptable,WebSocket,isWebSocketCloseEvent} from "https://deno.land/std@0.87.0/ws/mod.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.1/mod.ts";
 import { v4 } from 'https://deno.land/std/uuid/mod.ts';
-import { joinGame } from './websockets/joinGame.ts';
+// import { joinGame } from './websockets/joinGame.ts';
+import {game} from './models/gameModel.ts';
 
 
 const sockets = new Map<string, WebSocket>()
 const server=serve({ port: 80 })
-
+let games:game=new game('132',10,12,2)
+console.log(games)
 console.log("start")
 for await (const req of server) {
     

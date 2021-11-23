@@ -1,7 +1,8 @@
 
-type game={
-    id:string;
-    dimensionsx:number;
-    dimensionsy:number;
-    playerCount:number;
+
+export  interface game{
+    [index: string]:number;
+        dimensionsx:number;
+        dimensionsy:number;
+        playerMaxCount:number;
 }
