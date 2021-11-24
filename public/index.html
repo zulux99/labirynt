@@ -28,13 +28,14 @@
     const socket = new WebSocket('ws://localhost/join');
     socket.addEventListener('open', function (event) {
     socket.send('Hello Server!');
+        console.log("witaj");
 });
 
 socket.addEventListener('message', function (event) {
     console.log('Message from server ', event.data);
 });
     function join(){
-        console.log("asdasd")
+        console.log("asdasd");
         socket.send('join');
     }
 </script>

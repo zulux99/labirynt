@@ -1,42 +1,40 @@
-import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts';
+import { acceptWebSocket,acceptable,WebSocket,isWebSocketCloseEvent} from "https://deno.land/std@0.87.0/ws/mod.ts";
 import { v4 } from 'https://deno.land/std/uuid/mod.ts';
+import {Game,Games} from '../models/gameModel.ts';
 
-let sockets = new Map<string, WebSocket>(); 
-
-interface BroadcastObj {
-  name: string,
-  mssg: string,
+const sockets = new Map<string, WebSocket>()
+function broadcastMessage(message: string, uid: string) {
+  sockets.forEach((socket, id) => {
+      if (!socket.isClosed )
+          socket.send(message)
+  })
 }
-
-// broadcast events to clients
-const broadcastEvent = (obj: BroadcastObj) => {
-  sockets.forEach((ws: WebSocket) => {
-    ws.send(JSON.stringify(obj));
-  });
+let gamesArrary: Game[] = []
+let temp:Game={
+dimensionsx: 10,dimensionsy: 12,opis: 'abc',
+playerMaxCount: 3
 }
+gamesArrary.push(temp);
 
-const chatConnection = async (ws: WebSocket) => {
-  // add new ws connection to map
-  const uid = v4.generate();
-  sockets.set(uid, ws);
+console.log("start",gamesArrary)
+export async function websocetindex(sock: WebSocket) {
+  console.log('connected')
+  const uid = v4.generate()
 
-  // listen for websocket events
-  for await (const ev of ws) {
-    console.log(ev);
+  sockets.set(uid, sock)
+  sockets.get(uid)?.send("First");
+  for await (const ev of sock) {
+      if (isWebSocketCloseEvent(ev)) {
+          console.log(ev)
+          sockets.delete(uid)
+          return
+      }
+      if (typeof ev === "string") {
+          const x=ev+" "+uid
+          console.log(x)
+          broadcastMessage(x, uid)
 
-    // delete socket if connection closed
-    if (isWebSocketCloseEvent(ev)) {
-      sockets.delete(uid);
-    }
-    
-    // create ev object if ev is string
-    if (typeof ev === 'string') {
-      let evObj = JSON.parse(ev.toString());
-      broadcastEvent(evObj);
-    }
+      }
 
   }
-
-};
-
-export { chatConnection };
+}

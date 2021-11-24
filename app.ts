@@ -2,15 +2,26 @@ import { serve } from "https://deno.land/std@0.87.0/http/server.ts";
 import { acceptWebSocket,acceptable,WebSocket,isWebSocketCloseEvent} from "https://deno.land/std@0.87.0/ws/mod.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.1/mod.ts";
 import { v4 } from 'https://deno.land/std/uuid/mod.ts';
-// import { joinGame } from './websockets/joinGame.ts';
-import {game} from './models/gameModel.ts';
+import { websocetindex } from './websockets/joinGame.ts';
+import {Game,Games} from './models/gameModel.ts';
 
 
 const sockets = new Map<string, WebSocket>()
-const server=serve({ port: 80 })
-let games:game=new game('132',10,12,2)
-console.log(games)
-console.log("start")
+const server=serve({ port: 80 });
+// id:string;
+// dimensionsx:number;
+// dimensionsy:number;
+// playerMaxCount:number;
+// opis:String;
+
+let gamesArrary: Game[] = []
+let temp:Game={
+dimensionsx: 10,dimensionsy: 12,opis: 'abc',
+playerMaxCount: 3
+}
+gamesArrary.push(temp);
+
+console.log("start",gamesArrary)
 for await (const req of server) {
     
     if (req.url === '/') {
@@ -18,7 +29,7 @@ for await (const req of server) {
             status: 200,
             body: await Deno.open('./public/index.html')
           });
-    } else if (req.url === '/about') {
+    } else if (req.url === '/game') {
         req.respond({
             status: 200,
             body: await Deno.open('./public/index.html')
@@ -34,7 +45,7 @@ for await (const req of server) {
               bufWriter,
               headers
             })
-            .then(handleWs)
+            .then(websocetindex)
             .catch(console.error);
           }
 
@@ -45,33 +56,6 @@ for await (const req of server) {
        
   }
 
-
-function broadcastMessage(message: string, uid: string) {
-    sockets.forEach((socket, id) => {
-        if (!socket.isClosed && uid !== id)
-            socket.send(message)
-    })
-}
-
-async function handleWs(sock: WebSocket) {
-    console.log('connected')
-    const uid = v4.generate()
-    sockets.set(uid, sock)
-    for await (const ev of sock) {
-        if (isWebSocketCloseEvent(ev)) {
-            console.log(ev)
-            sockets.delete(uid)
-            return
-        }
-        if (typeof ev === "string") {
-            const x=ev+" "+uid
-            console.log(x)
-            broadcastMessage(x, uid)
-
-        }
-
-    }
-}
 
 
 
