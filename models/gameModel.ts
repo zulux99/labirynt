@@ -4,8 +4,9 @@ export  interface Game{
         dimensionsx:number;
         dimensionsy:number;
         playerMaxCount:number;
-        opis:String;
-        mapa:String;
+        opis?:String;
+        map?:String;
+        public?:boolean;
 }
 export interface Games {
     [index: string]: Game;
