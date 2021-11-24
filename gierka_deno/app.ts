@@ -22,7 +22,6 @@ router
     .get('/phaser',async (ctx) => {
         const body = await Deno.readTextFile(Deno.cwd() + './public/phaser.html')
         ctx.response.body = body;
-        console.log("jb")
     })
     .get('/index.css',async (ctx) => {
         await send(ctx, ctx.request.url.pathname, {
