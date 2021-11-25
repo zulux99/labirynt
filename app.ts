@@ -14,14 +14,8 @@ const server=serve({ port: 80 });
 // playerMaxCount:number;
 // opis:String;
 
-let gamesArrary: Game[] = []
-let temp:Game={
-dimensionsx: 10,dimensionsy: 12,opis: 'abc',
-playerMaxCount: 3
-}
-gamesArrary.push(temp);
 
-console.log("start",gamesArrary)
+
 for await (const req of server) {
     
     if (req.url === '/') {
