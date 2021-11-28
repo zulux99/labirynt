@@ -31,7 +31,6 @@ for await (const req of server) {
       }
       else if (req.url === '/join') {
         if (acceptable(req)) {
-            
             const { conn, r: bufReader, w: bufWriter, headers } = req;
             acceptWebSocket({
               conn ,

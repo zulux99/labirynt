@@ -7,8 +7,14 @@ export  interface Game{
         opis:String;
         map:String;
         public:Boolean;
-        playersArrary:Array<String>;
+        playersIdArrary:Array<Player>;
 }
 export interface Games {
     [index: string]: Game;
   }
+export interface Player{
+        id:String;
+        name:String;
+        idWebsocet?:string;
+}
+
