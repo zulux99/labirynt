@@ -1,10 +1,18 @@
 import { WebSocket,isWebSocketCloseEvent} from "https://deno.land/std@0.87.0/ws/mod.ts";
 import { v4 } from 'https://deno.land/std/uuid/mod.ts';
-import {Game,Games,Player} from '../models/gameModel.ts';
+import {Game,Games,Player,DataWebsocet} from '../models/gameModel.ts';
 import {Random} from 'https://deno.land/x/random@v1.1.2/Random.js';
 
 const sockets = new Map<string, WebSocket>()
 const r = new Random();
+
+
+
+
+let obj: DataWebsocet = JSON.parse('{ "type": "join", "y1": "wartosc x1" }');
+
+console.log("json",obj.x1)
+
 
 let gamesArrary: Game[] = []
 console.log("start",gamesArrary)
@@ -23,15 +31,20 @@ export async function websocetindex(sock: WebSocket) {
             return
         }
         if (typeof ev === "string") { 
-            if(ev==="join"){
+            try{
+            let obj: DataWebsocet = JSON.parse(ev)
+            }catch(error){
+                continue
+            }
+            if(obj.type=="join"){
               
               
             broadcastMessage("mapa", uid)
             }
 
-            const x=ev+" "+uid
-            console.log(x)
-            broadcastMessage(x, uid)
+            // let evObj = JSON.stringify(JSON.parse(ev.toString())).toString();
+            // console.log(evObj)
+            // broadcastMessage(evObj, uid)
 
         }
 
@@ -42,11 +55,18 @@ export async function websocetindex(sock: WebSocket) {
 function broadcastMessage(message: string, uid: string) {
   sockets.forEach((socket, id) => {
       if (!socket.isClosed )
-          socket.send(message)
+          socket.send(message.toString())
   })
 }
 function mazeGeneration():string{
 
   
 return "maze"
+}
+async function getJson(filePath: string) {
+    try {
+        return JSON.parse(filePath);
+    } catch(e) {
+        console.log(filePath+'błąd: '+e.message);
+    }
 }
