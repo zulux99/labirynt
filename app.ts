@@ -15,7 +15,6 @@ const server=serve({ port: 80 });
 // opis:String;
 
 
-
 for await (const req of server) {
     
     if (req.url === '/') {
@@ -26,7 +25,7 @@ for await (const req of server) {
     } else if (req.url === '/game') {
         req.respond({
             status: 200,
-            body: await Deno.open('./public/index.html')
+            body: await Deno.open('./public/phaser.html')
           });
       }
       else if (req.url === '/join') {
@@ -48,18 +47,3 @@ for await (const req of server) {
       }
        
   }
-
-
-
-
-// for await (const req of server ) {
-//     const { conn, r: bufReader, w: bufWriter, headers } = req;
-
-//     acceptWebSocket({
-//         conn,
-//         bufReader,
-//         bufWriter,
-//         headers,
-//     }).then(handleWs)
-//      .catch(console.error)
-// }
