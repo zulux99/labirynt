@@ -16,27 +16,14 @@
     <header class="offcanvas-header mt-5 pt-5 justify-content-center nosifer main-color display-1">
         LABIRYNT
     </header>
+    <form>
         <div class="form-check d-grid justify-content-center container">
         <input class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="Twoja nazwa gracza">
-        <button onclick="join()" class="p-3 fw-bolder mt-3 main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark">
+        <button class="p-3 fw-bolder mt-3 main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark">
                 dołącz do gry
         </button>
         </div>
+    </form>
     </div>
 </body>
-<script >
-    const socket = new WebSocket('ws://localhost/join');
-    socket.addEventListener('open', function (event) {
-    socket.send('Hello Server!');
-        console.log("witaj");
-});
-
-socket.addEventListener('message', function (event) {
-    console.log('Message from server ', event.data);
-});
-    function join(){
-        console.log("asdasd");
-        socket.send('join');
-    }
-</script>
 </html>
