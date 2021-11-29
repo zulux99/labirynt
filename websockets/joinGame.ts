@@ -7,13 +7,6 @@ const sockets = new Map<string, WebSocket>()
 const r = new Random();
 
 
-
-
-let obj: DataWebsocet = JSON.parse('{ "type": "join", "y1": "wartosc x1" }');
-
-console.log("json",obj.x1)
-
-
 let gamesArrary: Game[] = []
 console.log("start",gamesArrary)
 export async function websocetindex(sock: WebSocket) {
@@ -33,14 +26,16 @@ export async function websocetindex(sock: WebSocket) {
         if (typeof ev === "string") { 
             try{
             let obj: DataWebsocet = JSON.parse(ev)
+            if(obj.type==="join"){
+                broadcastMessage("mapa", uid)
+                 }
+                 if(obj.type==="broadcastMessage"){
+                     broadcastMessage("broadcastMessage", uid)
+                     }
             }catch(error){
-                continue
+                sockets.get(uid)?.send('Error');                
             }
-            if(obj.type=="join"){
-              
-              
-            broadcastMessage("mapa", uid)
-            }
+            
 
             // let evObj = JSON.stringify(JSON.parse(ev.toString())).toString();
             // console.log(evObj)
