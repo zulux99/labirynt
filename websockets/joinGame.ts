@@ -1,6 +1,6 @@
 import { WebSocket,isWebSocketCloseEvent} from "https://deno.land/std@0.87.0/ws/mod.ts";
 import { v4 } from 'https://deno.land/std/uuid/mod.ts';
-import {Game,Games,Player,DataWebsocet} from '../models/gameModel.ts';
+import {Game,Games,Player,DataWebsocet,AddGame} from '../models/gameModel.ts';
 import {Random} from 'https://deno.land/x/random@v1.1.2/Random.js';
 
 const sockets = new Map<string, WebSocket>()
@@ -15,7 +15,7 @@ export async function websocetindex(sock: WebSocket) {
 
     console.log("midle",gamesArrary)
     sockets.set(uid, sock)
-    sockets.get(uid)?.send('connected: '+uid+' random: '+r.string(5  ));
+    sockets.get(uid)?.send('connected: '+uid+' random: test'+r.string(5  ));
     console.log('connected: '+uid+' random: ')
     for await (const ev of sock) {
         if (isWebSocketCloseEvent(ev)) {
@@ -23,17 +23,26 @@ export async function websocetindex(sock: WebSocket) {
             sockets.delete(uid)
             return
         }
-        if (typeof ev === "string") { 
+        if (typeof ev === "string") {
+            console.log(ev) 
             try{
             let obj: DataWebsocet = JSON.parse(ev)
+            console.log( JSON.parse(ev)) 
             if(obj.type==="join"){
-                broadcastMessage("mapa", uid)
-                 }
-                 if(obj.type==="broadcastMessage"){
-                     broadcastMessage("broadcastMessage", uid)
+                sockets.get(uid)?.send('join');
+                 }else if(obj.type==="createNewGame"){
+                    // gamesArrary.push(AddGame()) 
+                    }else if(obj.type==="broadcastMessage"){
+                        broadcastMessage("broadcastMessage", uid)
+                        }else if(obj.type==="broadcastMessage"){
+                            broadcastMessage("broadcastMessage", uid)
+                            }else{
+                        broadcastMessage("error", uid) 
                      }
+
             }catch(error){
-                sockets.get(uid)?.send('Error');                
+                console.error
+                sockets.get(uid)?.send('Error:-'+error);                
             }
             
 
