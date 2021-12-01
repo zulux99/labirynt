@@ -37,10 +37,12 @@ export interface Player{
 }
 export interface  DataWebsocet{
         type:string;
-        x1?:number;
-        x2?:number;
-        y1?:number;
-        y2?:number;
+        dimensionsx:number;
+        dimensionsy:number;
+        playerMaxCount:number;
+        opis:string;
+        publicval:boolean;
+
 
 
 }

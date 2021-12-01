@@ -5,7 +5,7 @@ import {Random} from 'https://deno.land/x/random@v1.1.2/Random.js';
 
 const sockets = new Map<string, WebSocket>()
 const r = new Random();
-
+console.log(mazeGeneration(3,4))
 
 let gamesArrary: Game[] = []
 console.log("start",gamesArrary)
@@ -31,7 +31,8 @@ export async function websocetindex(sock: WebSocket) {
             if(obj.type==="join"){
                 sockets.get(uid)?.send('join');
                  }else if(obj.type==="createNewGame"){
-                    // gamesArrary.push(AddGame()) 
+                    gamesArrary.push(AddGame(obj.dimensionsx,obj.dimensionsy,obj.playerMaxCount,obj.opis,"brakmapy",obj.publicval,[{id:uid,name:'abc',idWebsocet:uid}])) 
+                    console.log(gamesArrary)
                     }else if(obj.type==="broadcastMessage"){
                         broadcastMessage("broadcastMessage", uid)
                         }else if(obj.type==="broadcastMessage"){
@@ -62,15 +63,44 @@ function broadcastMessage(message: string, uid: string) {
           socket.send(message.toString())
   })
 }
-function mazeGeneration():string{
-
-  
-return "maze"
+ function mazeGeneration(dimensionsx:number,dimensionsy:number):string{
+// interface cell{
+//     top: false,     
+//       left: false,   
+//       bottom: false,  
+//       right: false
+// }
+function checkMazeEnd (array:Array<Array<number>>) {
+   array.forEach(subArray => {
+       subArray.forEach(element => {
+           if(element==1)
+           return false
+       });
+   });
+    return true
 }
-async function getJson(filePath: string) {
-    try {
-        return JSON.parse(filePath);
-    } catch(e) {
-        console.log(filePath+'błąd: '+e.message);
-    }
+let mazeArrary =[]
+for (let index = 0; index < dimensionsy; index++) {
+    mazeArrary[index] = Array(dimensionsx).fill(1); 
+    
+}
+console.log(mazeArrary)
+// // let loop = true
+let x :number=Math.floor(Math.random() * dimensionsx)
+let y :number=Math.floor(Math.random() * dimensionsy)
+while (checkMazeEnd(mazeArrary)){
+    mazeArrary[y][x]=0;
+console.log(mazeArrary,x,y)
+    do{
+ x =Math.floor(Math.random() * (dimensionsx))
+ y =Math.floor(Math.random() * (dimensionsy))
+//  console.log(mazeArrary[y][x])
+}while(mazeArrary[y][x]==0)
+
+
+
+}
+
+console.log(mazeArrary)
+return "maze"
 }

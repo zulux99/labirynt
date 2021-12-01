@@ -34,9 +34,16 @@
 socket.addEventListener('message', function (event) {
     console.log('Message from server ', event.data);
 });
+class DataWebsocet {
+  constructor(type, x1) {
+    this.type = type;
+    this.x1 = x1;
+  }
+} 
+temp.type="join"
     function join(){
-        console.log("asdasd");
-        socket.send('join');
+        console.log(JSON.stringify(temp));
+        socket.send(JSON.stringify(temp))
     }
 </script>
 </html>
