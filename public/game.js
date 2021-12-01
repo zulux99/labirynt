@@ -34,24 +34,61 @@ function create() {
     tileset = map.addTilesetImage("tiles", null, 32, 32, 1, 2);
     layer = map.createStaticLayer(0, tileset, 0, 0);
     layer.setCollisionBetween(1, 50);
+    cursors = this.input.keyboard.createCursorKeys(); this.anims.create({
+        key: 'idle',
+        frames: this.anims.generateFrameNumbers('postac', { frames: [1] }),
+        frameRate: 0,
+        repeat: 1,
+    });
+    this.anims.create({
+        key: 'walk_right',
+        frames: this.anims.generateFrameNumbers('postac', { frames: [6, 7, 8] }),
+        frameRate: 6,
+        repeat: -1
+    });
+    this.anims.create({
+        key: 'walk_up',
+        frames: this.anims.generateFrameNumbers('postac', { frames: [9, 10, 11] }),
+        frameRate: 6,
+        repeat: -1,
+    });
+    this.anims.create({
+        key: 'walk_down',
+        frames: this.anims.generateFrameNumbers('postac', { frames: [0, 1, 2] }),
+        frameRate: 6,
+        repeat: -1,
+    });
+    this.anims.create({
+        key: 'walk_left',
+        frames: this.anims.generateFrameNumbers('postac', { frames: [3, 4, 5] }),
+        frameRate: 6,
+        repeat: -1
+    });
     player = this.physics.add.sprite(48, 48, "postac");
-    player.setScale(.95);
+    player.setScale(.5);
     this.physics.add.collider(player, layer);
     this.cameras.main.startFollow(player, true);
     this.cameras.main.setFollowOffset(-player.width, -player.height);
-    cursors = this.input.keyboard.createCursorKeys();
 }
-function update(){
-    if (cursors.left.isDown) 
-        player.setVelocityX(-100);
-    else if (cursors.right.isDown)
-        player.setVelocityX(100);
-    else 
-        player.setVelocityX(0);
-    if (cursors.down.isDown)
-        player.setVelocityY(100);
-    else if (cursors.up.isDown)
-        player.setVelocityY(-100);
-    else
-        player.setVelocityY(0);
+function update() {
+    if (cursors.left.isDown) {
+        player.play("walk_left", true);
+        player.setVelocity(-100, 0);
+    }
+    else if (cursors.right.isDown) {
+        player.play("walk_right", true);
+        player.setVelocity(100, 0);
+    }
+    else if (cursors.down.isDown) {
+        player.play("walk_down", true);
+        player.setVelocity(0, 100);
+    }
+    else if (cursors.up.isDown) {
+        player.play("walk_up", true);
+        player.setVelocity(0, -100);
+    }
+    else {
+        player.setVelocity(0, 0);
+        player.play("idle");
+    }
 }
