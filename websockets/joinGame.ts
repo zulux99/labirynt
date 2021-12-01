@@ -5,7 +5,7 @@ import {Random} from 'https://deno.land/x/random@v1.1.2/Random.js';
 
 const sockets = new Map<string, WebSocket>()
 const r = new Random();
-console.log(mazeGeneration(3,4))
+console.log(mazeGeneration(10,12))
 
 let gamesArrary: Game[] = []
 console.log("start",gamesArrary)
@@ -88,19 +88,46 @@ console.log(mazeArrary)
 // // let loop = true
 let x :number=Math.floor(Math.random() * dimensionsx)
 let y :number=Math.floor(Math.random() * dimensionsy)
-while (checkMazeEnd(mazeArrary)){
-    mazeArrary[y][x]=0;
-console.log(mazeArrary,x,y)
-    do{
- x =Math.floor(Math.random() * (dimensionsx))
- y =Math.floor(Math.random() * (dimensionsy))
-//  console.log(mazeArrary[y][x])
-}while(mazeArrary[y][x]==0)
-
-
+console.log("1")
+while (true){
+    let maxKiernek=0
+    if (mazeArrary[y-1][x]==1 && y-1!=0  ){
+        maxKiernek+=1
+    }
+    if (mazeArrary[y+1][x]==1 &&  y+1!=dimensionsy){
+        maxKiernek+=1
+    }
+    if (mazeArrary[y][x-1]==1 && x+1!=0 ){
+        maxKiernek+=1
+    }
+    if (mazeArrary[y][x+1]==1 &&  x+1!=dimensionsx){
+        maxKiernek+=1
+    }
+let kierunek:number=Math.floor(Math.random()*maxKiernek)
+while (true){
+if (mazeArrary[y-1][x]==1 && y-1!=0  ){
+    kierunek-=1
+}
+if (mazeArrary[y+1][x]==1 &&  y+1!=dimensionsy){
+    maxKiernek+=1
+}
+if (mazeArrary[y][x-1]==1 && x+1!=0 ){
+    maxKiernek+=1
+}
+if (mazeArrary[y][x+1]==1 &&  x+1!=dimensionsx){
+    maxKiernek+=1
+}
+}
+console.log(kierunek)
+        
 
 }
 
+
+
+
+
+console.log("abc")
 console.log(mazeArrary)
 return "maze"
 }
