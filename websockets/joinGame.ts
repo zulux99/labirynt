@@ -5,7 +5,7 @@ import {Random} from 'https://deno.land/x/random@v1.1.2/Random.js';
 
 const sockets = new Map<string, WebSocket>()
 const r = new Random();
-console.log(mazeGeneration(10,12))
+console.log(mazeGeneration(5,4))
 
 let gamesArrary: Game[] = []
 console.log("start",gamesArrary)
@@ -63,71 +63,125 @@ function broadcastMessage(message: string, uid: string) {
           socket.send(message.toString())
   })
 }
+// 5 4
  function mazeGeneration(dimensionsx:number,dimensionsy:number):string{
-// interface cell{
-//     top: false,     
-//       left: false,   
-//       bottom: false,  
-//       right: false
-// }
-function checkMazeEnd (array:Array<Array<number>>) {
-   array.forEach(subArray => {
-       subArray.forEach(element => {
-           if(element==1)
-           return false
-       });
-   });
-    return true
-}
+
+    function wybieranie(array:Array<Array<number>>,x:number,y:number,a:number,b:number) {
+        if( array[y][x-1]==3&& x-1!=a){
+            array[y][x-1]=1
+        }
+        if( array[y][x+1]==3&& x+1!=a){
+            array[y][x+1]=1
+        }
+        if( array[y-1][x]==3&& y-1!=b){
+            array[y-1][x]=1
+        }
+        if( array[y+1][x]==3&& y+1!=b){
+            array[y+1][x]=1
+        }
+        return array
+    }
 let mazeArrary =[]
-for (let index = 0; index < dimensionsy; index++) {
-    mazeArrary[index] = Array(dimensionsx).fill(1); 
+for (let index = 0; index < (dimensionsy*2)+1; index++) {
+    mazeArrary[index] = Array((dimensionsx*2)+1).fill(1); 
     
 }
-console.log(mazeArrary)
-// // let loop = true
-let x :number=Math.floor(Math.random() * dimensionsx)
-let y :number=Math.floor(Math.random() * dimensionsy)
-console.log("1")
-while (true){
-    let maxKiernek=0
-    if (mazeArrary[y-1][x]==1 && y-1!=0  ){
-        maxKiernek+=1
-    }
-    if (mazeArrary[y+1][x]==1 &&  y+1!=dimensionsy){
-        maxKiernek+=1
-    }
-    if (mazeArrary[y][x-1]==1 && x+1!=0 ){
-        maxKiernek+=1
-    }
-    if (mazeArrary[y][x+1]==1 &&  x+1!=dimensionsx){
-        maxKiernek+=1
-    }
-let kierunek:number=Math.floor(Math.random()*maxKiernek)
-while (true){
-if (mazeArrary[y-1][x]==1 && y-1!=0  ){
-    kierunek-=1
-}
-if (mazeArrary[y+1][x]==1 &&  y+1!=dimensionsy){
-    maxKiernek+=1
-}
-if (mazeArrary[y][x-1]==1 && x+1!=0 ){
-    maxKiernek+=1
-}
-if (mazeArrary[y][x+1]==1 &&  x+1!=dimensionsx){
-    maxKiernek+=1
-}
-}
-console.log(kierunek)
+for (let indexy = 0; indexy < mazeArrary.length; indexy++) {
+    for (let indexx = 0; indexx < mazeArrary[indexy].length; indexx++) {
+        if( indexy!=0 && indexy != (dimensionsy*2)&& indexx!=0 &&indexx!=((dimensionsx*2))){
+            if ( indexy%2==1 || indexx%2==1  ){
+                mazeArrary[indexy][indexx]=3
+                
+            }
+        }
+         
         
+    }
+    
+}
 
+
+let x : number= r.int(1,(dimensionsx*2)-1)
+let y: number=  r.int(1,(dimensionsy*2)-1)
+
+while(true){
+    do{
+         y= (r.int(0,(dimensionsy-1))*2)+1
+         x=  (r.int(0,(dimensionsx-1))*2)+1
+         console.log(x,y,mazeArrary[y][x]," a")
+    }while(mazeArrary[y][x]!=3)
+    mazeArrary[y][x]=0
+  while( true) { 
+    console.log(mazeArrary,"==================") 
+      let maxkierunek=0
+    if(mazeArrary[y-1][x]==3){
+        maxkierunek+=1
+    }
+    if(mazeArrary[y+1][x]==3){
+        maxkierunek+=1
+    }
+    if(mazeArrary[y][x-1]==3){
+        maxkierunek+=1
+    }
+    if(mazeArrary[y][x+1]==3){
+        maxkierunek+=1
+    }
+    if(maxkierunek==0){
+        break
+    }
+    let kierunek = r.int(1,maxkierunek)
+    if(mazeArrary[y-1][x]==3 && kierunek !=0 ){
+        kierunek-=1
+    }
+    if(kierunek==0){
+        mazeArrary[y-1][x]=0
+        mazeArrary[y-2][x]=0
+        mazeArrary=wybieranie(mazeArrary,x,y,x,y-1)
+        y-=2
+        kierunek-=1
+    }
+    if(mazeArrary[y+1][x]==3 &&kierunek !=0){
+        kierunek-=1
+    }
+if(kierunek==0){
+    mazeArrary[y+1][x]=0
+    mazeArrary[y+2][x]=0
+    mazeArrary=wybieranie(mazeArrary,x,y,x,y+1)
+    y+=2
+    kierunek-=1
+    }
+    if(mazeArrary[y][x-1]==3 &&kierunek !=0){
+        kierunek-=1
+    }
+    if(kierunek==0){
+        mazeArrary[y][x-1]=0
+        mazeArrary[y][x-2]=0
+        mazeArrary=wybieranie(mazeArrary,x,y,x-1,y)
+        x-=2
+        kierunek-=1
+    }
+    if(mazeArrary[y][x+1]==3 &&kierunek !=0){
+        kierunek-=1
+    }
+    if(kierunek==0){
+        mazeArrary[y][x+1]=0
+        mazeArrary[y][x+2]=0
+        mazeArrary=wybieranie(mazeArrary,x,y,x,y-1)
+        x+=2
+        kierunek-=1
+    }
+
+    
 }
 
 
 
 
+    break
+}
 
-console.log("abc")
-console.log(mazeArrary)
+console.log(mazeArrary) 
+console.log(JSON.stringify( mazeArrary)) 
+
 return "maze"
 }
