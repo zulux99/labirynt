@@ -1,4 +1,4 @@
-var cursors, map, player, tileset, layer, cien;
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD;
 class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -56,7 +56,10 @@ class Game extends Phaser.Scene {
         //#endregion
 
         cursors = this.input.keyboard.createCursorKeys();
-
+        keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         // kafelki, mapa, warstwy, kolizja
         map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
         tileset = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
@@ -65,7 +68,7 @@ class Game extends Phaser.Scene {
 
 
         // tworzenie postaci, ruchy kamery
-        player = this.physics.add.sprite(48, 48, "postac");
+        player = this.physics.add.sprite(48, 40, "postac");
         player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
         this.cameras.main.startFollow(player, true);
@@ -91,19 +94,19 @@ class Game extends Phaser.Scene {
 
     update() {
         //#region poruszanie się po mapie
-        if (cursors.left.isDown) {
+        if (cursors.left.isDown || keyA.isDown) {
             player.play("walk_left", true);
             player.setVelocity(-100, 0);
         }
-        else if (cursors.right.isDown) {
+        else if (cursors.right.isDown || keyD.isDown) {
             player.play("walk_right", true);
             player.setVelocity(100, 0);
         }
-        else if (cursors.down.isDown) {
+        else if (cursors.down.isDown || keyS.isDown) {
             player.play("walk_down", true);
             player.setVelocity(0, 100);
         }
-        else if (cursors.up.isDown) {
+        else if (cursors.up.isDown || keyW.isDown) {
             player.play("walk_up", true);
             player.setVelocity(0, -100);
         }
