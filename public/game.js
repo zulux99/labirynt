@@ -66,7 +66,7 @@ class Game extends Phaser.Scene {
 
         // tworzenie postaci, ruchy kamery
         player = this.physics.add.sprite(48, 48, "postac");
-        player.setScale(.8);
+        player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
         this.cameras.main.startFollow(player, true);
         this.cameras.main.setFollowOffset(-player.width / 2, -player.height / 2);
