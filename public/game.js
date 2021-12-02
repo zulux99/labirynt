@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-var
 var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD;
 class Game extends Phaser.Scene {
     constructor() {
@@ -9,7 +10,7 @@ class Game extends Phaser.Scene {
         // ściany
         this.load.image("tiles", "tile/test.png");
         // postac
-        this.load.spritesheet("postac", "tile/postackopia.png", {
+        this.load.spritesheet("postac", "assets/postac.png", {
             frameWidth: 32,
             frameHeight: 32,
         });
@@ -54,18 +55,19 @@ class Game extends Phaser.Scene {
             repeat: -1,
         });
         //#endregion
-
+        //#region zdefiniowanie klawiszy do poruszania postacią
         cursors = this.input.keyboard.createCursorKeys();
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        //#endregion
+
         // kafelki, mapa, warstwy, kolizja
         map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
         tileset = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
         layer = map.createStaticLayer(0, tileset, 0, 0);
         layer.setCollisionBetween(1, 50);
-
 
         // tworzenie postaci, ruchy kamery
         player = this.physics.add.sprite(48, 40, "postac");
@@ -85,6 +87,7 @@ class Game extends Phaser.Scene {
             add: false,
         });
         layer.mask = cien.createBitmapMask();
+        
         // mobilne
         if (!this.sys.game.device.os.desktop) {
             this.cameras.main.y = -window.innerHeight * 0.2;
@@ -116,8 +119,8 @@ class Game extends Phaser.Scene {
         }
         //#endregion
         // dystans widzenia porusza się z graczem
-        cien.x = player.body.position.x + 14;
-        cien.y = player.body.position.y + 14;
+        cien.x = player.body.position.x + 8;
+        cien.y = player.body.position.y + 8;
     }
 }
 class Hud extends Phaser.Scene {
@@ -133,6 +136,7 @@ class Hud extends Phaser.Scene {
     }
     create() {
         this.scene.get("Game");
+        //#region strzalki na telefonie
         if (!this.sys.game.device.os.desktop) {
             this.goLeft = this.add.image(window.innerWidth * 0.3, window.innerHeight * 0.7, 'goLeft').setInteractive();
             this.goLeft.setAlpha(0.5);
@@ -147,9 +151,10 @@ class Hud extends Phaser.Scene {
             this.goUp.setAlpha(0.5);
             this.goUp.setScale(0.3);
         }
+        //#endregion
     }
     update() {
-
+        //#region poruszanie się na telefonie
         if (!this.sys.game.device.os.desktop) {
             this.goLeft.on('pointerdown', function (pointer) {
                 this.goLeft.setAlpha(1);
@@ -184,6 +189,7 @@ class Hud extends Phaser.Scene {
                 cursors.up.isDown = false;
             }, this);
         }
+        //#endregion
 
     }
 }
