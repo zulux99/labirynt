@@ -19,6 +19,7 @@ game = new Phaser.Game(config);
 
 function preload() {
 
+    this.load.image("mask", "assets/mask.png")
     // ściany
     this.load.image("tiles", "tile/drawtiles-spaced.png");
     // postac
@@ -34,12 +35,11 @@ function preload() {
 }
 
 function create() {
-
     // kafelki, mapa, warstwy, kolizja
     const map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
     tileset = map.addTilesetImage("tiles", null, 32, 32, 1, 2);
     layer = map.createStaticLayer(0, tileset, 0, 0);
-    layer.setCollisionBetween(1, 50);
+    layer.setCollisionBetween(1, 50); 
 
     // animacje
     cursors = this.input.keyboard.createCursorKeys(); this.anims.create({
@@ -81,6 +81,20 @@ function create() {
     this.cameras.main.setFollowOffset(-player.width, -player.height);
     this.cameras.main.setDeadzone(64, 64);
     this.cameras.main.setZoom(1.5);
+    const spotlight = this.make.sprite({
+        x: 20,
+        y: 20,
+        key: 'mask',
+        speed: 100,
+        scale: 1.5,
+        add: false
+    });
+    layer.mask = new Phaser.Display.Masks.BitmapMask(this, spotlight);
+    // graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+    // circle = new Phaser.Geom.Circle(50, 50, 50);
+    // graphics.fillCircleShape(circle);
+    // this.physics.add.existing(graphics);
+    // this.cameras.main.setViewport(200, 150, 400, 300);
 }
 
 function update() {
