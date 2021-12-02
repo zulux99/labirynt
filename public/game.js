@@ -1,7 +1,7 @@
 const config = {
     type: Phaser.AUTO,
-	width: window.innerWidth,
-	height: window.innerHeight,
+    width: window.innerWidth,
+    height: window.innerHeight,
     parent: "phaser-example",
     pixelArt: true,
     backgroundColor: "#1a1a2d",
@@ -35,14 +35,8 @@ function preload() {
 }
 
 function create() {
-    // kafelki, mapa, warstwy, kolizja
-    const map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
-    tileset = map.addTilesetImage("tiles", null, 32, 32, 1, 2);
-    layer = map.createStaticLayer(0, tileset, 0, 0);
-    layer.setCollisionBetween(1, 50); 
-
-    // animacje
-    cursors = this.input.keyboard.createCursorKeys(); this.anims.create({
+    //#region animacje
+    this.anims.create({
         key: 'idle',
         frames: this.anims.generateFrameNumbers('postac', { frames: [1] }),
         frameRate: 0,
@@ -72,34 +66,39 @@ function create() {
         frameRate: 6,
         repeat: -1,
     });
+    //#endregion
+
+    // kafelki, mapa, warstwy, kolizja
+    const map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
+    tileset = map.addTilesetImage("tiles", null, 32, 32, 1, 2);
+    layer = map.createStaticLayer(0, tileset, 0, 0);
+    layer.setCollisionBetween(1, 50);
+
 
     // tworzenie postaci, ruchy kamery
     player = this.physics.add.sprite(48, 48, "postac");
     player.setScale(.8);
     this.physics.add.collider(player, layer);
     this.cameras.main.startFollow(player, true);
-    this.cameras.main.setFollowOffset(-player.width, -player.height);
+    this.cameras.main.setFollowOffset(-player.width / 2, -player.height / 2);
     this.cameras.main.setDeadzone(64, 64);
     this.cameras.main.setZoom(1.5);
-    const spotlight = this.make.sprite({
+
+    // dystans widzenia
+    cien = this.make.sprite({
         x: 20,
         y: 20,
         key: 'mask',
-        speed: 100,
-        scale: 1.5,
-        add: false
+        scale: 1.3,
+        add: false,
     });
-    layer.mask = new Phaser.Display.Masks.BitmapMask(this, spotlight);
-    // graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
-    // circle = new Phaser.Geom.Circle(50, 50, 50);
-    // graphics.fillCircleShape(circle);
-    // this.physics.add.existing(graphics);
-    // this.cameras.main.setViewport(200, 150, 400, 300);
+    layer.mask = cien.createBitmapMask();
+    cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update() {
 
-    // poruszanie się po mapie
+    //#region poruszanie się po mapie
     if (cursors.left.isDown) {
         player.play("walk_left", true);
         player.setVelocity(-100, 0);
@@ -120,6 +119,8 @@ function update() {
         player.setVelocity(0, 0);
         player.play("idle");
     }
-
-
+    //#endregion
+    // dystans widzenia porusza się z graczem
+    cien.x = player.body.position.x + 14;
+    cien.y = player.body.position.y + 14;
 }
