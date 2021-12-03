@@ -7,6 +7,7 @@ export  interface Game{
         opis:String;
         map:String;
         publicval:Boolean;
+        difficulty:number;
         playersIdArrary:Array<Player>;
 }
 export function  AddGame(dimensionsx:number,
@@ -15,6 +16,7 @@ export function  AddGame(dimensionsx:number,
         opis:String,
         map:String,
         publicval:Boolean,
+        difficulty:number,
         playersIdArrary:Array<Player>){
                 let temp :Game={dimensionsx,
                         dimensionsy,
@@ -22,6 +24,7 @@ export function  AddGame(dimensionsx:number,
                         opis,
                         map,
                         publicval,
+                        difficulty,
                         playersIdArrary
 
                 }
@@ -35,14 +38,20 @@ export interface Player{
         name:String;
         idWebsocet?:string;
 }
-export interface  DataWebsocet{
+export interface  DataWebsocetGame{
         type:string;
         dimensionsx:number;
         dimensionsy:number;
         playerMaxCount:number;
         opis:string;
         publicval:boolean;
-
-
-
+        difficulty:number;
+}
+export interface  DataWebsocetJoin{
+        type:string;
+        idGame:string;
+        idPlayer:string;
+}
+export interface  DataWebsocet{
+        type:string;
 }
