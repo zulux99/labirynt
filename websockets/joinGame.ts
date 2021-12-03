@@ -108,6 +108,8 @@ while(true){
     do{
          y= (r.int(0,(dimensionsy-1))*2)+1
          x=  (r.int(0,(dimensionsx-1))*2)+1
+         x=3
+         y=3
          console.log(x,y,mazeArrary[y][x]," a")
     }while(mazeArrary[y][x]!=3)
     mazeArrary[y][x]=0
@@ -180,8 +182,6 @@ if(kierunek==0){
     break
 }
 
-console.log(mazeArrary) 
-console.log(JSON.stringify( mazeArrary)) 
 
-return "maze"
+return JSON.stringify( mazeArrary)
 }
