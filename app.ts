@@ -26,7 +26,7 @@ for await (const req of server) {
     } else if (req.url === '/game') {
         req.respond({
             status: 200,
-            body: await Deno.open('./public/index.html')
+            body: await Deno.open('./public/game.html')
           });
       }
       else if (req.url === '/join') {

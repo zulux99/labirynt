@@ -50,15 +50,13 @@ export async function websocetindex(sock: WebSocket) {
                             dataVreateGame.dimensionsy,
                             dataVreateGame.playerMaxCount,
                             dataVreateGame.opis,
-                            mazeGeneration(
-                                dataVreateGame.dimensionsx,
-                                dataVreateGame.dimensionsy,
-                            ),
+                            "mazeGeneration(dataVreateGame.dimensionsx,dataVreateGame.dimensionsy )",
                             dataVreateGame.publicval,
                             1,
                             [{ id: uid, name: "abc", idWebsocet: uid }],
                         ),
                     );
+                    sockets.get(uid)?.send('{"id":"'+uid+'"}');
                     console.log(gamesArrary);
                 } else if (obj.type === "broadcastMessage") {
                     broadcastMessage("broadcastMessage", uid);
