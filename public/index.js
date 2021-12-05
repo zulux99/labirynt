@@ -1,4 +1,5 @@
 const socket = new WebSocket('ws://localhost/join');
+const d = new Date();
 socket.addEventListener('open', function (event) {
     socket.send('Hello Server!');
     console.log("witaj");
@@ -18,10 +19,19 @@ var temp = JSON.parse('{"type":"join"}');
 function join() {
 
 
-    let difficulty = document.getElementById('difficulty').value;
     console.log(JSON.stringify(temp) + difficulty);
     socket.send(JSON.stringify(temp))
 }
+
+function setUserName() {
+
+    let userName = document.getElementById('userName').value;
+    let temp = '{"type":"setUserName","name":"' + userName + '"}'
+    console.log(temp)
+    document.cookie = "userName=" + userName + "; expires=" + d.setTime(d.getTime() + (999 * 24 * 60 * 60 * 1000)) + " ; max-age=3600;path=/   ";
+    socket.send(temp)
+}
+
 
 function addGame() {
 
@@ -47,7 +57,6 @@ function addGame() {
             if (obj.id == "join") {
                 alert("juz grasz ")
             } else {
-                const d = new Date();
                 document.cookie = "id=" + obj.id + "; expires=" + d.setTime(d.getTime() + (999 * 24 * 60 * 60 * 1000)) + " ; max-age=3600;path=/   ";
                 document.cookie = "idgame=" + obj.idgame + "; expires=" + d.setTime(d.getTime() + (999 * 24 * 60 * 60 * 1000)) + " ; max-age=3600;path=/   ";
                 window.location.href = "http://localhost/game";
