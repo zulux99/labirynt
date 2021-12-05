@@ -14,9 +14,28 @@ import {
 } from "../models/gameModel.ts";
 import { Random } from "https://deno.land/x/random@v1.1.2/Random.js";
 
+
+function CheckIplay(array:Array<Game>,id:string):boolean {
+    let temp:boolean=false
+    array.every(element => {
+       element.playersIdArrary.every(player => {
+           if (player.id==id) {
+            temp=true
+            return 
+           }
+       });
+       if (temp) {
+           return
+       }
+    });
+    return temp
+}
+
+
+
 const sockets = new Map<string, WebSocket>();
 const r = new Random();
-console.log(mazeGeneration(5, 4));
+// console.log(mazeGeneration(5, 4));
 
 let gamesArrary: Game[] = [];
 console.log("start", gamesArrary);
@@ -25,8 +44,8 @@ export async function websocetindex(sock: WebSocket) {
 
     console.log("midle", gamesArrary);
     sockets.set(uid, sock);
-    sockets.get(uid)?.send("connected: " + uid + " random: test" + r.string(5));
-    console.log("connected: " + uid + " random: ");
+    sockets.get(uid)?.send("connected: " + uid );
+    console.log("connected: " + uid);
     for await (const ev of sock) {
         if (isWebSocketCloseEvent(ev)) {
             console.log(ev);
@@ -41,23 +60,29 @@ export async function websocetindex(sock: WebSocket) {
                     let dataVreateJoin: DataWebsocetJoin = JSON.parse(ev);
 
                     sockets.get(uid)?.send("join");
-                } else if (obj.type === "createNewGame") {
-                    let dataVreateGame: DataWebsocetGame = JSON.parse(ev);
-                    
-                    gamesArrary.push(
-                        AddGame(
-                            dataVreateGame.dimensionsx,
-                            dataVreateGame.dimensionsy,
-                            dataVreateGame.playerMaxCount,
-                            dataVreateGame.opis,
-                            "mazeGeneration(dataVreateGame.dimensionsx,dataVreateGame.dimensionsy )",
-                            dataVreateGame.publicval,
-                            1,
-                            [{ id: uid, name: "abc", idWebsocet: uid }],
-                        ),
-                    );
-                    sockets.get(uid)?.send('{"id":"'+uid+'"}');
-                    console.log(gamesArrary);
+                } else if (obj.type === "createNewGame" ) {
+                    if (CheckIplay(gamesArrary,uid)) {
+                            console.log('{"id":"you play"}')
+                            sockets.get(uid)?.send('{"id":"join"}');
+                        }else{
+                            let dataVreateGame: DataWebsocetGame = JSON.parse(ev);
+                            let idgame=r.string(5)
+                            gamesArrary.push(
+                                AddGame(
+                                    idgame,
+                                    dataVreateGame.dimensionsx,
+                                    dataVreateGame.dimensionsy,
+                                    dataVreateGame.playerMaxCount,
+                                    dataVreateGame.opis,
+                                    "mazeGeneration(dataVreateGame.dimensionsx,dataVreateGame.dimensionsy )",
+                                    dataVreateGame.publicval,
+                                    dataVreateGame.difficulty,
+                                    [{ id: uid, name: "abc", idWebsocet: uid }],
+                                ),
+                            );
+                            sockets.get(uid)?.send('{"id":"'+uid+'","idgame":"'+idgame+'"}');
+                            console.log(gamesArrary);
+                        }
                 } else if (obj.type === "broadcastMessage") {
                     broadcastMessage("broadcastMessage", uid);
                 } else if (obj.type === "broadcastMessage") {
@@ -86,6 +111,7 @@ function broadcastMessage(message: string, uid: string) {
 }
 // 5 4
 function mazeGeneration(dimensionsx: number, dimensionsy: number): string {
+    return "[[1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,1,3,3,3,1],[1,0,1,1,1,0,1,3,1,3,1],[1,0,0,0,1,0,1,3,3,3,1],[1,1,1,1,1,0,1,3,1,3,1],[1,0,1,0,0,0,1,3,3,3,1],[1,0,1,0,1,1,1,3,1,3,1],[1,0,0,0,1,3,3,3,3,3,1],[1,1,1,1,1,1,1,1,1,1,1]]"
     function wybieranie(
         array: Array<Array<number>>,
         x: number,

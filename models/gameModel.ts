@@ -1,6 +1,7 @@
 
 
 export  interface Game{
+        idgame:string;
         dimensionsx:number;
         dimensionsy:number;
         playerMaxCount:number;
@@ -10,7 +11,9 @@ export  interface Game{
         difficulty:number;
         playersIdArrary:Array<Player>;
 }
-export function  AddGame(dimensionsx:number,
+export function  AddGame(
+        idgame:string,
+        dimensionsx:number,
         dimensionsy:number,
         playerMaxCount:number,
         opis:String,
@@ -18,7 +21,9 @@ export function  AddGame(dimensionsx:number,
         publicval:Boolean,
         difficulty:number,
         playersIdArrary:Array<Player>){
-                let temp :Game={dimensionsx,
+                let temp :Game={
+                        idgame,
+                        dimensionsx,
                         dimensionsy,
                         playerMaxCount,
                         opis,

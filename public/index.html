@@ -17,7 +17,14 @@
         LABIRYNT
     </header>
         <div class="form-check d-grid justify-content-center container">
-        <input class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="Twoja nazwa gracza">
+            <input class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="Twoja nazwa gracza" value="userNameEx" type="text">
+            <input id="dimensionsx" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="dimensionsx" type="number" value="15" min="15" max="50"> 
+            <input id="dimensionsy" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="dimensionsy" type="number" value="20" min="15" max="50">
+            <input id="opis" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="opis">
+            <label for="publicval" style="color: white;text-align: center;">publicval</label>
+            <input id="publicval" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="Twoja nazwa gracza" type="checkbox">
+            <label for="difficulty"  style="color: white; text-align: center;">difficulty</label>
+            <input id="difficulty" type="range" id="vol" name="vol" min="0" max="2" value="0">
         <button onclick="join()" class="p-3 fw-bolder mt-3 main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark">
             dołącz do gry
     </button>
