@@ -1,5 +1,31 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD;
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading;
+class LoadingScene extends Phaser.Scene {
+    constructor() {
+        super('LoadingScene');
+    }
+    preload() {
+        this.load.spritesheet("ladowanie", "assets/loading.png", {
+            frameWidth: 500,
+            frameHeight: 500
+        });
+    }
+    create(){
+        this.anims.create({
+            key: 'loading',
+            frames: this.anims.generateFrameNumbers('ladowanie', 
+            {frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]}),
+            frameRate: 15,
+            repeat: -1,
+        });
+        loading = this.add.sprite(0, 0, "loading");
+        this.cameras.main.startFollow(loading, true);
+        loading.play("loading", true);
+        // if (ładowanie skończone) {
+            this.scene.start("Game");
+        // }
+    }
+}
 class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -93,6 +119,7 @@ class Game extends Phaser.Scene {
             this.cameras.main.y = -window.innerHeight * 0.2;
             this.cameras.main.setZoom(2.5);
         }
+        this.scene.launch("Hud")
     }
 
     update() {
@@ -126,7 +153,7 @@ class Game extends Phaser.Scene {
 class Hud extends Phaser.Scene {
 
     constructor() {
-        super({ key: 'Hud', active: true });
+        super("Hud");
     }
     preload() {
         this.load.image("goRight", "assets/arrow_right.png");
@@ -203,7 +230,7 @@ const config = {
     physics: {
         default: "arcade",
     },
-    scene: [Game, Hud]
+    scene: [LoadingScene, Game, Hud]
 };
 
 game = new Phaser.Game(config);
