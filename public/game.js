@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, bron;
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD;
 class Game extends Phaser.Scene {
     constructor() {
         super('Game');
     }
     preload() {
-        this.load.image("bron", "assets/6.png")
+
         this.load.image("mask", "assets/mask.png")
         // ściany
         this.load.image("tiles", "tile/test.png");
@@ -76,7 +76,7 @@ class Game extends Phaser.Scene {
         this.cameras.main.startFollow(player, true);
         this.cameras.main.setFollowOffset(-player.width / 2, -player.height / 2);
         this.cameras.main.setDeadzone(64, 64);
-        this.cameras.main.setZoom(3);
+        this.cameras.main.setZoom(1.5);
 
         // dystans widzenia
         cien = this.make.sprite({
@@ -87,7 +87,6 @@ class Game extends Phaser.Scene {
             add: false,
         });
         layer.mask = cien.createBitmapMask();
-        bron = this.add.sprite(0, 0, "bron");
         
         // mobilne
         if (!this.sys.game.device.os.desktop) {
@@ -98,126 +97,25 @@ class Game extends Phaser.Scene {
 
     update() {
         //#region poruszanie się po mapie
-        player.setDepth(0);
-        bron.setDepth(1);
-        var currentFrame = player.anims.currentFrame;
-        var graczX = player.body.position.x;
-        var graczY = player.body.position.y;
         if (cursors.left.isDown || keyA.isDown) {
             player.play("walk_left", true);
             player.setVelocity(-100, 0);
-            switch(currentFrame.index)
-            {
-                case 1:
-                {
-                    bron.x = graczX + 7;
-                    bron.y = graczY + 6;
-                    bron.angle = -120;
-                    break;
-                }
-                case 2:
-                {
-                    bron.x = graczX + 6;
-                    bron.y = graczY + 7;
-                    bron.angle = -140;
-                    break;
-                }
-                case 3:
-                {
-                    bron.x = graczX + 8;
-                    bron.y = graczY + 9;
-                    bron.angle = -160;
-                    break;
-                }
-            }
         }
         else if (cursors.right.isDown || keyD.isDown) {
             player.play("walk_right", true);
             player.setVelocity(100, 0);
-            switch(currentFrame.index)
-            {
-                case 1:
-                {
-                    bron.x = graczX + 14;
-                    bron.y = graczY + 8;
-                    bron.angle = 120;
-                    break;
-                }
-                case 2:
-                {
-                    bron.x = graczX + 10;
-                    bron.y = graczY + 9;
-                    bron.angle = 140;
-                    break;
-                }
-                case 3:
-                {
-                    bron.x = graczX + 5;
-                    bron.y = graczY + 10;
-                    bron.angle = 160;
-                    break;
-                }
-            }
         }
         else if (cursors.down.isDown || keyS.isDown) {
             player.play("walk_down", true);
             player.setVelocity(0, 100);
-            switch(currentFrame.index)
-            {
-                case 1:
-                {
-                    bron.x = graczX;
-                    bron.y = graczY + 8;
-                    break;
-                }
-                case 2:
-                {
-                    bron.x = graczX - 1;
-                    bron.y = graczY + 6;
-                    break;
-                }
-                case 3:
-                {
-                    bron.x = graczX - 2;
-                    bron.y = graczY + 6;
-                    break;
-                }
-            }
         }
         else if (cursors.up.isDown || keyW.isDown) {
             player.play("walk_up", true);
             player.setVelocity(0, -100);
-            bron.angle = 50;
-            bron.setDepth(0);
-            player.setDepth(1);
-            switch(currentFrame.index)
-            {
-                case 1:
-                {
-                    bron.x = graczX + 19;
-                    bron.y = graczY;
-                    break;
-                }
-                case 2:
-                {
-                    bron.x = graczX + 19;
-                    bron.y = graczY;
-                    break;
-                }
-                case 3:
-                {
-                    bron.x = graczX + 17;
-                    bron.y = graczY;
-                    break;
-                }
-            }   
         }
         else {
             player.setVelocity(0, 0);
             player.play("idle");
-            bron.angle = -130;
-            bron.x = graczX - 1;
-            bron.y = graczY + 6;
         }
         //#endregion
         // dystans widzenia porusza się z graczem
