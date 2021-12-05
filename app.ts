@@ -25,6 +25,7 @@ for await (const req of server) {
     } else if (req.url === '/game') {
         req.respond({
             status: 200,
+
             body: await Deno.open('./public/phaser.html')
           });
       }
