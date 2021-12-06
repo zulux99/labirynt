@@ -1,7 +1,8 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, level, dimensionsx, dimensionsy, aaaaa = false,
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, level, dimensionsx, dimensionsy, aaaaa = false, oko, graczX, graczY,
     difficulty, opis, idgame, actualX, actualY, player2, id;
 let socket = new WebSocket('ws://25.89.121.208/join');
+
 class LoadingScene extends Phaser.Scene {
     constructor() {
         super('LoadingScene');
@@ -100,10 +101,16 @@ class Game extends Phaser.Scene {
         super('Game');
     }
     preload() {
+        this.load.image("oko", "assets/eye.png");
+        this.load.image("maczuga", "assets/6.png");
+        this.load.image("goRight", "assets/arrow_right.png");
+        this.load.image("goLeft", "assets/arrow_left.png");
+        this.load.image("goUp", "assets/arrow_up.png");
+        this.load.image("goDown", "assets/arrow_down.png");
 
-        this.load.image("mask", "assets/mask.png")
+        this.load.image("mask", "assets/mask.png");
         // ściany
-        this.load.image("tiles", "tile/test.png");
+        this.load.image("tiles", "assets/mapa.png");
         // postac
         this.load.spritesheet("postac", "assets/postac.png", {
             frameWidth: 32,
@@ -117,7 +124,17 @@ class Game extends Phaser.Scene {
     }
 
     create() {
-
+        const level = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
         //#region animacje
 
         this.anims.create({
@@ -179,7 +196,7 @@ class Game extends Phaser.Scene {
         // map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
         tileset = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
         layer = map.createStaticLayer(0, tileset, 0, 0);
-        layer.setCollisionBetween(1, 50);
+        layer.setCollisionBetween(1, 2);
 
         // tworzenie postaci, ruchy kamery
         player2 = this.add.sprite(3 * 32 + 8, 1 * 32, "postac")
@@ -208,10 +225,51 @@ class Game extends Phaser.Scene {
             this.cameras.main.y = -window.innerHeight * 0.2;
             this.cameras.main.setZoom(2.5);
         }
+        // oko = this.physics.add.sprite(6 * 32 + 16, 3 * 32 + 16, "oko");
+        player = this.physics.add.sprite(40, 32, "postac");
+        player.body.setSize(16, 16).setOffset(8, 16);
+        this.physics.add.collider(player, layer);
+        this.cameras.main.startFollow(player, true);
+        this.cameras.main.setFollowOffset(-player.width / 2, -player.height / 2);
+        this.cameras.main.setDeadzone(64, 64);
+        this.cameras.main.setZoom(1.7);
+        layer.mask = cien.createBitmapMask();
         this.scene.launch("Hud")
+
+        // pętla zwracająca płytki z trzema ścianami dookoła
+        layer.forEachTile(tile =>{
+            if (tile.index == 0){
+                if (layer.getTileAt(tile.x - 1, tile.y).index == 0
+                && layer.getTileAt(tile.x + 1, tile.y).index == 1
+                && layer.getTileAt(tile.x, tile.y + 1).index == 1
+                && layer.getTileAt(tile.x, tile.y - 1).index == 1
+                ||
+                layer.getTileAt(tile.x - 1, tile.y).index == 1
+                && layer.getTileAt(tile.x + 1, tile.y).index == 0
+                && layer.getTileAt(tile.x, tile.y + 1).index == 1
+                && layer.getTileAt(tile.x, tile.y - 1).index == 1
+                ||
+                layer.getTileAt(tile.x - 1, tile.y).index == 1
+                && layer.getTileAt(tile.x + 1, tile.y).index == 1
+                && layer.getTileAt(tile.x, tile.y + 1).index == 0
+                && layer.getTileAt(tile.x, tile.y - 1).index == 1
+                ||
+                layer.getTileAt(tile.x - 1, tile.y).index == 1
+                && layer.getTileAt(tile.x + 1, tile.y).index == 1
+                && layer.getTileAt(tile.x, tile.y + 1).index == 1
+                && layer.getTileAt(tile.x, tile.y - 1).index == 0)
+                {
+                    console.log(tile.x)
+                    this.add.sprite(tile.x * 32 + 16, tile.y * 32 + 16, "oko")
+                }
+            }
+        })
+        player.setDepth(1);
     }
 
     update() {
+        graczX = parseInt((player.body.position.x + 8) / 32)
+        graczY = parseInt((player.body.position.y + 8) / 32)
         //#region poruszanie się po mapie
         if (cursors.left.isDown || keyA.isDown) {
             player.play("walk_left", true);
@@ -268,14 +326,7 @@ class Hud extends Phaser.Scene {
     constructor() {
         super("Hud");
     }
-    preload() {
-        this.load.image("goRight", "assets/arrow_right.png");
-        this.load.image("goLeft", "assets/arrow_left.png");
-        this.load.image("goUp", "assets/arrow_up.png");
-        this.load.image("goDown", "assets/arrow_down.png");
-    }
     create() {
-        this.scene.get("Game");
         //#region strzalki na telefonie
         if (!this.sys.game.device.os.desktop) {
             this.goLeft = this.add.image(window.innerWidth * 0.3, window.innerHeight * 0.7, 'goLeft').setInteractive();
