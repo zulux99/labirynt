@@ -1,13 +1,35 @@
-const socket = new WebSocket('ws://localhost/join');
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+const socket = new WebSocket('ws://'+window.location.hostname+'/join');
+// const socket = new WebSocket('ws://localhost/join');
 const d = new Date();
 socket.addEventListener('open', function (event) {
-    socket.send('Hello Server!');
-    console.log("witaj");
+    id = getCookie("id")
+
+    socket.send('{"type":"changeId","val":"id"}');
+
+    socket.onmessage = function (event) {
+        console.log(event.data)
+    }
 });
 
-socket.addEventListener('message', function (event) {
-    console.log('Message from server ', event.data);
-});
+// socket.addEventListener('message', function (event) {
+//     console.log('Message from server ', event.data);
+// });
 class DataWebsocet {
     constructor(type, x1) {
         this.type = type;
@@ -19,8 +41,26 @@ var temp = JSON.parse('{"type":"join"}');
 function join() {
 
 
-    console.log(JSON.stringify(temp) + difficulty);
+    console.log(JSON.stringify(temp));
     socket.send(JSON.stringify(temp))
+
+    socket.onmessage = function (event) {
+        console.log(event.data);
+        const obj = JSON.parse(event.data);
+        if (typeof obj.id != undefined) {
+            if (obj.id == "error") {
+                alert("coś poszło nie tak")
+            } else {
+
+                const d = new Date();
+                d.setTime(d.getTime() + (2 * 24 * 60 * 60 * 1000));
+                document.cookie = "id=" + obj.id + "; 'expires'=" + d.toGMTString() + " ; max-age=3600;path=/   ";
+                document.cookie = "idgame=" + obj.idgame + "; 'expires'=" + d.toGMTString() + " ; max-age=3600;path=/   ";
+                window.location.href = "/game";
+            }
+
+        }
+    }
 }
 
 function setUserName() {
@@ -55,11 +95,14 @@ function addGame() {
         const obj = JSON.parse(event.data);
         if (typeof obj.id != undefined) {
             if (obj.id == "join") {
-                alert("juz grasz ")
+                alert("coś poszło nie tak")
             } else {
-                document.cookie = "id=" + obj.id + "; expires=" + d.setTime(d.getTime() + (999 * 24 * 60 * 60 * 1000)) + " ; max-age=3600;path=/   ";
-                document.cookie = "idgame=" + obj.idgame + "; expires=" + d.setTime(d.getTime() + (999 * 24 * 60 * 60 * 1000)) + " ; max-age=3600;path=/   ";
-                window.location.href = "http://localhost/game";
+
+                const d = new Date();
+                d.setTime(d.getTime() + (2 * 24 * 60 * 60 * 1000));
+                document.cookie = "id=" + obj.id + "; 'expires'=" + d.toGMTString() + " ; max-age=3600;path=/   ";
+                document.cookie = "idgame=" + obj.idgame + "; 'expires'=" + d.toGMTString() + " ; max-age=3600;path=/   ";
+                window.location.href = "/game";
             }
 
         }

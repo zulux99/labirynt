@@ -34,15 +34,15 @@ const sockets = new Map<string, WebSocket>();
 const r = new Random();
 // console.log(mazeGeneration(5, 4));
 
-let UserName: string = "unknown";
 let gamesArrary: Game[] = [];
 console.log("start", gamesArrary);
 export async function websocetindex(sock: WebSocket) {
   const uid = v4.generate();
+  let UserName: string = "unknown";
 
-  console.log("midle", gamesArrary);
+  // console.log("midle", gamesArrary);
   sockets.set(uid, sock);
-  sockets.get(uid)?.send("connected: " + uid);
+  // sockets.get(uid)?.send("connected: " + uid);
   console.log("connected: " + uid);
   for await (const ev of sock) {
     if (isWebSocketCloseEvent(ev)) {
@@ -51,17 +51,54 @@ export async function websocetindex(sock: WebSocket) {
       return;
     }
     if (typeof ev === "string") {
-      console.log(ev);
+      // console.log(ev);
       try {
         let obj: DataWebsocet = JSON.parse(ev);
         if (obj.type === "join") {
           let dataVreateJoin: DataWebsocetJoin = JSON.parse(ev);
-
-          sockets.get(uid)?.send("join");
+          console.log(dataVreateJoin);
+          if (dataVreateJoin.idGame != undefined) {
+            gamesArrary.forEach((element) => {
+              if (element.idgame == dataVreateJoin.idGame) {
+                element.playersIdArrary.forEach((valplayer) => {
+                  if (valplayer.id == dataVreateJoin.idPlayer) {
+                    valplayer.idWebsocet = uid;
+                    UserName = valplayer.name;
+                    sockets.get(uid)?.send(JSON.stringify(element));
+                  }
+                });
+              }
+            });
+          } else {
+            let a = true;
+            gamesArrary.every((element) => {
+              if (element.playerMaxCount > element.playersIdArrary.length) {
+                element.playersIdArrary.push({
+                  id: uid,
+                  name: UserName,
+                  idWebsocet: uid,
+                  x: element.dimensionsx - 1,
+                  y: element.dimensionsy - 1,
+                });
+                sockets.get(uid)?.send(
+                  '{"id":"' + uid + '","idgame":"' + element.idgame + '"}',
+                );
+                a = false;
+                return;
+              }
+            });
+            if (a) {
+              sockets.get(uid)?.send(
+                '{"id":"error"}',
+              );
+            }
+          }
         } else if (obj.type === "createNewGame") {
           if (CheckIplay(gamesArrary, uid)) {
             console.log('{"id":"you play"}');
-            sockets.get(uid)?.send('{"id":"join"}');
+            sockets.get(uid)?.send(
+              '{"id":"join"}',
+            );
           } else {
             let dataVreateGame: DataWebsocetGame = JSON.parse(ev);
             let idgame = r.string(5);
@@ -72,22 +109,45 @@ export async function websocetindex(sock: WebSocket) {
                 dataVreateGame.dimensionsy,
                 dataVreateGame.playerMaxCount,
                 dataVreateGame.opis,
-                mazeGeneration(
+                JSON.stringify(mazeGeneration(
                   dataVreateGame.dimensionsx,
                   dataVreateGame.dimensionsy,
-                ),
+                )),
                 dataVreateGame.publicval,
                 dataVreateGame.difficulty,
-                [{ id: uid, name: UserName, idWebsocet: uid }],
+                [{ id: uid, name: UserName, idWebsocet: uid, x: 1, y: 1 }],
               ),
             );
             sockets.get(uid)?.send(
               '{"id":"' + uid + '","idgame":"' + idgame + '"}',
             );
-            console.log(gamesArrary);
           }
         } else if (obj.type === "broadcastMessage") {
           broadcastMessage("broadcastMessage", uid);
+        } else if (obj.type === "changeposition") {
+          console.log(ev + "}}}}}}}}}}}}}}}}}");
+          let tempPlayer: Player = JSON.parse(ev);
+          console.error(tempPlayer.x + "?????????");
+          console.error(tempPlayer.y + "?????????");
+          gamesArrary.forEach((gamesArraryVal) => {
+            if (gamesArraryVal.idgame == tempPlayer.name) {
+              gamesArraryVal.playersIdArrary.forEach((element) => {
+                if (element.id === tempPlayer.id) {
+                  element.x = Number(tempPlayer.x);
+                  element.y = Number(tempPlayer.y);
+                }
+              });
+              gamesArraryVal.playersIdArrary.forEach((element) => {
+                sockets.get(element.idWebsocet)?.send(
+                  JSON.stringify(gamesArraryVal.playersIdArrary),
+                );
+              });
+            }
+          });
+        } else if (obj.type === "changeId") {
+          // let tempPlayer: Player = JSON.parse(ev);
+          // sockets.set(tempPlayer.id, sock);
+          // sockets.delete(uid);
         } else if (obj.type === "setUserName") {
           let tempPlayer: Player = JSON.parse(ev);
 
@@ -102,6 +162,7 @@ export async function websocetindex(sock: WebSocket) {
         sockets.get(uid)?.send("Error:-" + error);
       }
     }
+    // console.log(gamesArrary);
   }
 }
 
@@ -113,7 +174,7 @@ function broadcastMessage(message: string, uid: string) {
   });
 }
 function mazeGeneration(dimensionsx: number, dimensionsy: number): string {
- function wybieranie(
+  function wybieranie(
     array: Array<Array<number>>,
     x: number,
     y: number,

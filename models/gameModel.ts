@@ -3,8 +3,8 @@ export interface Game {
   dimensionsx: number;
   dimensionsy: number;
   playerMaxCount: number;
-  opis: String;
-  map: String;
+  opis: string;
+  map: string;
   publicval: Boolean;
   difficulty: number;
   playersIdArrary: Array<Player>;
@@ -14,8 +14,8 @@ export function AddGame(
   dimensionsx: number,
   dimensionsy: number,
   playerMaxCount: number,
-  opis: String,
-  map: String,
+  opis: string,
+  map: string,
   publicval: Boolean,
   difficulty: number,
   playersIdArrary: Array<Player>,
@@ -37,9 +37,11 @@ export interface Games {
   [index: string]: Game;
 }
 export interface Player {
-  id: String;
-  name: String;
-  idWebsocet?: string;
+  id: string;
+  name: string;
+  x?: number;
+  y?: number;
+  idWebsocet: string;
 }
 export interface DataWebsocetGame {
   type: string;
@@ -52,7 +54,7 @@ export interface DataWebsocetGame {
 }
 export interface DataWebsocetJoin {
   type: string;
-  idGame: string;
+  idGame?: string;
   idPlayer: string;
 }
 export interface DataWebsocet {

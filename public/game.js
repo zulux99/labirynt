@@ -1,5 +1,7 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading;
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, level, dimensionsx, dimensionsy, aaaaa = false,
+    difficulty, opis, idgame, actualX, actualY, player2, id;
+let socket = new WebSocket('ws://25.89.121.208/join');
 class LoadingScene extends Phaser.Scene {
     constructor() {
         super('LoadingScene');
@@ -10,20 +12,87 @@ class LoadingScene extends Phaser.Scene {
             frameHeight: 500
         });
     }
-    create(){
+    create() {
         this.anims.create({
             key: 'loading',
-            frames: this.anims.generateFrameNumbers('ladowanie', 
-            {frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]}),
+            frames: this.anims.generateFrameNumbers('ladowanie', {
+                frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+            }),
             frameRate: 15,
             repeat: -1,
         });
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+
+
         loading = this.add.sprite(0, 0, "loading");
         this.cameras.main.startFollow(loading, true);
         loading.play("loading", true);
-        // if (ładowanie skończone) {
+        id = getCookie("id");
+        let idgame = getCookie("idgame");
+        console.log(id + " " + idgame)
+        if (id === '' || idgame === '') {
+            console.log(id + " " + idgame)
+            window.location.href = ''+window.location.hostname+'/';
+        }
+        let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
+        
+        console.log("111111111111111111")
+        socket.send(temp)
+        socket.addEventListener('open', function (event) {
+            console.log("??????????????????????????????")
+            console.log(temp)
+            socket.send(temp)
+        });
+
+
+
+    }
+    update() {
+        if (aaaaa == false) {
+
+        }
+        socket.onmessage = function (event) {
+            console.log(event.data);
+            if (aaaaa === false) {
+                console.log(event.data);
+
+                let jsn = JSON.parse(event.data)
+                console.log(jsn.map + ' ======================')
+                if (jsn.map != "") {
+                    console.log("jsn.map" + jsn.map)
+                    level = JSON.parse(JSON.parse(jsn.map))
+                    dimensionsx = jsn.dimensionsx
+                    dimensionsy = jsn.dimensionsy
+                    opis = jsn.opis
+                    idgame = jsn.idgame
+                    difficulty = jsn.difficulty
+                    aaaaa = true
+                }
+            }
+
+        }
+
+        if (aaaaa) {
+            aaaaa = ""
+
             this.scene.start("Game");
-        // }
+        }
     }
 }
 class Game extends Phaser.Scene {
@@ -48,35 +117,46 @@ class Game extends Phaser.Scene {
     }
 
     create() {
+
         //#region animacje
 
         this.anims.create({
             key: 'idle',
-            frames: this.anims.generateFrameNumbers('postac', { frames: [1] }),
+            frames: this.anims.generateFrameNumbers('postac', {
+                frames: [1]
+            }),
             frameRate: 0,
             repeat: 1,
         });
         this.anims.create({
             key: 'walk_left',
-            frames: this.anims.generateFrameNumbers('postac', { frames: [3, 4, 5] }),
+            frames: this.anims.generateFrameNumbers('postac', {
+                frames: [3, 4, 5]
+            }),
             frameRate: 6,
             repeat: -1
         });
         this.anims.create({
             key: 'walk_right',
-            frames: this.anims.generateFrameNumbers('postac', { frames: [6, 7, 8] }),
+            frames: this.anims.generateFrameNumbers('postac', {
+                frames: [6, 7, 8]
+            }),
             frameRate: 6,
             repeat: -1
         });
         this.anims.create({
             key: 'walk_up',
-            frames: this.anims.generateFrameNumbers('postac', { frames: [9, 10, 11] }),
+            frames: this.anims.generateFrameNumbers('postac', {
+                frames: [9, 10, 11]
+            }),
             frameRate: 6,
             repeat: -1,
         });
         this.anims.create({
             key: 'walk_down',
-            frames: this.anims.generateFrameNumbers('postac', { frames: [0, 1, 2] }),
+            frames: this.anims.generateFrameNumbers('postac', {
+                frames: [0, 1, 2]
+            }),
             frameRate: 6,
             repeat: -1,
         });
@@ -90,12 +170,19 @@ class Game extends Phaser.Scene {
         //#endregion
 
         // kafelki, mapa, warstwy, kolizja
-        map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
+
+        map = this.make.tilemap({
+            data: level,
+            tileWidth: 32,
+            tileHeight: 32
+        });
+        // map = this.make.tilemap({ key: "map", tileWidth: 32, tileHeight: 32 });
         tileset = map.addTilesetImage("tiles", null, 32, 32, 0, 0);
         layer = map.createStaticLayer(0, tileset, 0, 0);
         layer.setCollisionBetween(1, 50);
 
         // tworzenie postaci, ruchy kamery
+        player2 = this.add.sprite(3 * 32 + 8, 1 * 32, "postac")
         player = this.physics.add.sprite(48, 40, "postac");
         player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
@@ -104,6 +191,8 @@ class Game extends Phaser.Scene {
         this.cameras.main.setDeadzone(64, 64);
         this.cameras.main.setZoom(1.5);
 
+        actualX = player.body.position.x
+        actualY = player.body.position.y
         // dystans widzenia
         cien = this.make.sprite({
             x: 20,
@@ -113,7 +202,7 @@ class Game extends Phaser.Scene {
             add: false,
         });
         layer.mask = cien.createBitmapMask();
-        
+
         // mobilne
         if (!this.sys.game.device.os.desktop) {
             this.cameras.main.y = -window.innerHeight * 0.2;
@@ -127,20 +216,16 @@ class Game extends Phaser.Scene {
         if (cursors.left.isDown || keyA.isDown) {
             player.play("walk_left", true);
             player.setVelocity(-100, 0);
-        }
-        else if (cursors.right.isDown || keyD.isDown) {
+        } else if (cursors.right.isDown || keyD.isDown) {
             player.play("walk_right", true);
             player.setVelocity(100, 0);
-        }
-        else if (cursors.down.isDown || keyS.isDown) {
+        } else if (cursors.down.isDown || keyS.isDown) {
             player.play("walk_down", true);
             player.setVelocity(0, 100);
-        }
-        else if (cursors.up.isDown || keyW.isDown) {
+        } else if (cursors.up.isDown || keyW.isDown) {
             player.play("walk_up", true);
             player.setVelocity(0, -100);
-        }
-        else {
+        } else {
             player.setVelocity(0, 0);
             player.play("idle");
         }
@@ -148,6 +233,34 @@ class Game extends Phaser.Scene {
         // dystans widzenia porusza się z graczem
         cien.x = player.body.position.x + 8;
         cien.y = player.body.position.y + 8;
+            
+        
+        // if (actualX != player.body.position.x || actualY != player.body.position.y)
+        if ( Math.abs( actualX-player.body.position.x) > 16 || Math.abs( actualY-player.body.position.y) > 16 ) {
+            let abc = '{"type":"changeposition","name":"' + idgame + '","id":"' + id + '","x":"' + player.body.position.x + '","y":"' + player.body.position.y + '"}'
+            console.log(abc)
+            socket.send(abc)
+            actualX = player.body.position.x
+            actualY = player.body.position.y
+        }
+        socket.onmessage = function (event) {
+            // console.log("....................................");
+            console.log(" dane wejsciopwe " + event.data);
+
+            let changexyval = JSON.parse(event.data)
+
+            console.log(" json ons " + changexyval);
+            changexyval.forEach(element => {
+                if (element.id != id) {
+                    player2.setPosition(element.x, element.y);
+                }
+            });
+
+
+        }
+        socket.onclose = function (event) {
+            window.location.href = "/";
+        };
     }
 }
 class Hud extends Phaser.Scene {
