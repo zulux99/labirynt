@@ -1,3 +1,11 @@
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
 .tlo
 {
     background-image: url(https://steamcdn-a.akamaihd.net/steamcommunity/public/images/items/223650/9fa2ed60da1668378b926503766f3d5b186c8ca3.jpg);

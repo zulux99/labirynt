@@ -22,19 +22,34 @@ function join() {
     console.log(JSON.stringify(temp) + difficulty);
     socket.send(JSON.stringify(temp))
 }
-
+function dolaczDoGry(){
+    document.getElementById("dolaczDoGry").hidden = true;
+    document.getElementById("utworzGre").hidden = true;
+    document.getElementById("dolacz").hidden = false;
+    document.getElementById("idGry").hidden = false;
+}
 function setUserName() {
-
     let userName = document.getElementById('userName').value;
+    if (userName != "") {
+        document.getElementById("userName").hidden = true;
+        document.getElementById("wybierzNazwe").hidden = true;
+        document.getElementById("dolaczDoGry").hidden = false;
+        document.getElementById("utworzGre").hidden = false;
+    }
     let temp = '{"type":"setUserName","name":"' + userName + '"}'
     console.log(temp)
     document.cookie = "userName=" + userName + "; expires=" + d.setTime(d.getTime() + (999 * 24 * 60 * 60 * 1000)) + " ; max-age=3600;path=/   ";
     socket.send(temp)
 }
 
-
+function prepareGame(){
+    document.getElementById("utworzGre").hidden = true;
+    document.getElementById("dolaczDoGry").hidden = true;
+    document.getElementById("dimensionsx").hidden = false;
+    document.getElementById("dimensionsy").hidden = false;
+    document.getElementById("utworz").hidden = false;
+}
 function addGame() {
-
     const dimensionsx = document.getElementById("dimensionsx").value;
     const dimensionsy = document.getElementById('dimensionsy').value;
     const opis = document.getElementById('opis').value;
