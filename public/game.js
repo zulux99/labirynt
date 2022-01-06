@@ -1,105 +1,97 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, aaaaa = false, graczX, graczY,level, 
-keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY,dimensionsx ,dimensionsy ,
-    difficulty, opis, idgame, actualX, actualY, player2, id;
-    
-    console.log("asdasd:"+window.location.hostname)
-    // let socket = new WebSocket('ws://localhost/join');
-    let socket = new WebSocket('ws://'+window.location.hostname+'/join');
-    class LoadingScene extends Phaser.Scene {
-        constructor() {
-            super('LoadingScene');
-        }
-        preload() {
-            this.load.spritesheet("ladowanie", "assets/loading.png", {
-                frameWidth: 500,
-                frameHeight: 500
-            });
-        }
-        create() {
-            this.anims.create({
-                key: 'loading',
-                frames: this.anims.generateFrameNumbers('ladowanie', {
-                    frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
-                }),
-                frameRate: 15,
-                repeat: -1,
-            });
-    
-            function getCookie(cname) {
-                let name = cname + "=";
-                let decodedCookie = decodeURIComponent(document.cookie);
-                let ca = decodedCookie.split(';');
-                for (let i = 0; i < ca.length; i++) {
-                    let c = ca[i];
-                    while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                    }
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, aaaaa = false, graczX, graczY, level,
+    keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY, dimensionsx, dimensionsy,
+    difficulty, opis, idgame, actualX, actualY, player2, id, timer;
+
+console.log("asdasd:" + window.location.hostname)
+// let socket = new WebSocket('ws://localhost/join');
+let socket = new WebSocket('ws://' + window.location.hostname + '/join');
+class LoadingScene extends Phaser.Scene {
+    constructor() {
+        super('LoadingScene');
+    }
+    preload() {
+        this.load.spritesheet("ladowanie", "assets/loading.png", {
+            frameWidth: 500,
+            frameHeight: 500
+        });
+    }
+    create() {
+        this.anims.create({
+            key: 'loading',
+            frames: this.anims.generateFrameNumbers('ladowanie', {
+                frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+            }),
+            frameRate: 15,
+            repeat: -1,
+        });
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
                 }
-                return "";
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
             }
-    
-    
-    
-            loading = this.add.sprite(0, 0, "loading");
-            this.cameras.main.startFollow(loading, true);
-            loading.play("loading", true);
-            id = getCookie("id");
-            let idgame = getCookie("idgame");
+            return "";
+        }
+        loading = this.add.sprite(0, 0, "loading");
+        this.cameras.main.startFollow(loading, true);
+        loading.play("loading", true);
+        id = getCookie("id");
+        let idgame = getCookie("idgame");
+        console.log(id + " " + idgame)
+        if (id === '' || idgame === '') {
             console.log(id + " " + idgame)
-            if (id === '' || idgame === '') {
-                console.log(id + " " + idgame)
-                window.location.href = '/';
-            }
-            let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
-            
-            console.log("111111111111111111")
-            // socket.send(temp)
-            socket.addEventListener('open', function (event) {
-                console.log("??????????????????????????????")
-                console.log(temp)
-                socket.send(temp)
-            });
-    
-    
-    
-    
+            window.location.href = '/';
         }
-        update() {
-            if (aaaaa == false) {
-    
-            }
-            socket.onmessage = function (event) {
+        let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
+
+        console.log("111111111111111111")
+        // socket.send(temp)
+        socket.addEventListener('open', function (event) {
+            console.log("??????????????????????????????")
+            console.log(temp)
+            socket.send(temp)
+        });
+    }
+    update() {
+        if (aaaaa == false) {
+
+        }
+        socket.onmessage = function (event) {
+            console.log(event.data);
+            if (aaaaa === false) {
                 console.log(event.data);
-                if (aaaaa === false) {
-                    console.log(event.data);
-    
-                    let jsn = JSON.parse(event.data)
-                    console.log(jsn.map + ' ======================')
-                    if (jsn.map != "") {
-                        console.log("jsn.map" + jsn.map)
-                        level = JSON.parse(JSON.parse(jsn.map))
-                        dimensionsx = jsn.dimensionsx
-                        dimensionsy = jsn.dimensionsy
-                        opis = jsn.opis
-                        idgame = jsn.idgame
-                        difficulty = jsn.difficulty
-                        aaaaa = true
-                    }
+
+                let jsn = JSON.parse(event.data)
+                console.log(jsn.map + ' ======================')
+                if (jsn.map != "") {
+                    console.log("jsn.map" + jsn.map)
+                    level = JSON.parse(JSON.parse(jsn.map))
+                    dimensionsx = jsn.dimensionsx
+                    dimensionsy = jsn.dimensionsy
+                    opis = jsn.opis
+                    idgame = jsn.idgame
+                    difficulty = jsn.difficulty
+                    aaaaa = true
                 }
-    
             }
-    
-            if (aaaaa) {
-                aaaaa = ""
-    
-                this.scene.start("Game");
-            }
+
+        }
+        if (aaaaa) {
+            aaaaa = ""
+
+            this.scene.start("Game");
         }
     }
+}
 class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -131,7 +123,6 @@ class Game extends Phaser.Scene {
             "https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/tilemaps/csv/grid.csv",
         );
     }
-
     create() {
         // const level = [
         //     [1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2],
@@ -145,7 +136,6 @@ class Game extends Phaser.Scene {
         //     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         // ];
         //#region animacje
-        
         this.anims.create({
             key: 'idle',
             frames: this.anims.generateFrameNumbers('postac', { frames: [1] }),
@@ -216,6 +206,7 @@ class Game extends Phaser.Scene {
         this.cameras.main.setDeadzone(64, 64);
         this.cameras.main.setZoom(1.7);
         layer.mask = cien.createBitmapMask();
+        player2.mask = cien.createBitmapMask();
         this.scene.launch("Hud");
         actualX = player.body.position.x
         actualY = player.body.position.y
@@ -254,7 +245,12 @@ class Game extends Phaser.Scene {
             potwor.mask = cien.createBitmapMask();
         })
         player.setDepth(1);
-        this.physics.add.overlap(player, itemy, podniesItem);
+        this.physics.add.overlap(player, itemy, this.podniesItem);
+    }
+    podniesItem(sprite, group) {
+        game.scene.start("KoniecGry");
+        console.log(group.frame.name);
+        podniesItem.visible = true;
     }
     update() {
         graczX = parseInt((player.body.position.x + 8) / 32)
@@ -284,9 +280,9 @@ class Game extends Phaser.Scene {
         // dystans widzenia porusza się z graczem
         cien.x = player.body.position.x + 8;
         cien.y = player.body.position.y + 8;
- 
+
         // if (actualX != player.body.position.x || actualY != player.body.position.y)
-        if ( Math.abs( actualX-player.body.position.x) > 16 || Math.abs( actualY-player.body.position.y) > 16 ) {
+        if (Math.abs(actualX - player.body.position.x) > 16 || Math.abs(actualY - player.body.position.y) > 16) {
             let abc = '{"type":"changeposition","name":"' + idgame + '","id":"' + id + '","x":"' + player.body.position.x + '","y":"' + player.body.position.y + '"}'
             console.log(abc)
             socket.send(abc)
@@ -305,19 +301,11 @@ class Game extends Phaser.Scene {
                     player2.setPosition(element.x, element.y);
                 }
             });
-
-
         }
         socket.onclose = function (event) {
             window.location.href = "/";
         };
-
-
     }
-}
-function podniesItem(sprite, group) {
-    console.log(group.frame.name);
-    podniesItem.visible = true;
 }
 class Hud extends Phaser.Scene {
 
@@ -342,7 +330,7 @@ class Hud extends Phaser.Scene {
         test = this.add.sprite(tool1.x + tool3.width * tool3._scaleX / 2, tool1.y + tool3.height * tool3._scaleX / 2, "maczuga");
         test.setScale(tool3._scaleX);
         test.angle -= 45;
-        this.timer = this.add.text(10, 10, "0:00", { fontSize: "40px" });
+        timer = this.add.text(10, 10, "0:00", { fontSize: "40px" });
         var minuty = 0;
         var sekundy = 0;
         this.time.addEvent({
@@ -354,10 +342,10 @@ class Hud extends Phaser.Scene {
                     minuty++;
                 }
                 if (sekundy < 10) {
-                    this.timer.setText(minuty + ":0" + sekundy);
+                    timer.setText(minuty + ":0" + sekundy);
                 }
                 else {
-                    this.timer.setText(minuty + ":" + sekundy);
+                    timer.setText(minuty + ":" + sekundy);
                 }
             },
             loop: true
@@ -418,6 +406,46 @@ class Hud extends Phaser.Scene {
         //#endregion
     }
 }
+class KoniecGry extends Phaser.Scene {
+
+    constructor() {
+        super("KoniecGry");
+    }
+    create() {
+        this.graphics = this.add.graphics();
+        this.graphics.lineStyle(10,0x222222);
+        this.graphics.fillStyle(0x111111, .9);
+        var iw = window.innerWidth
+        var ih = window.innerHeight
+        this.graphics.strokeRect(iw / 2 - iw / 4, ih / 2 - ih / 4, iw / 2, ih / 2);
+        this.graphics.fillRect(iw / 2 - iw / 4, ih / 2 - ih / 4, iw / 2, ih / 2);
+        this.wygralGracz = this.add.text(
+        iw / 2,
+        ih / 2 - ih / 5,
+        "Wygrał gracz:", {
+            font: "40px Arial",
+            color: "#ffffff"
+        }
+        );
+        this.wygralGracz.setOrigin(0.5);
+        this.nickname = this.add.text(
+            iw / 2,
+        ih / 2 - ih / 8,
+        "Jakiś gracz", {
+            font: "30px Arial",
+            color: "#ffffff"
+        }
+        );
+        this.nickname.setOrigin(0.5)
+        this.scene.pause("Game")
+        timer.visible = false;
+        this.timerKoncowy = this.add.text(iw / 2, ih / 2, "Czas trwania gry: " + timer.text, { fontSize: "30px" });
+        this.timerKoncowy.setOrigin(0.5);
+    }
+    update() {
+
+    }
+}
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -428,7 +456,7 @@ const config = {
     physics: {
         default: "arcade",
     },
-    scene: [LoadingScene, Game, Hud]
+    scene: [LoadingScene, Game, Hud, KoniecGry]
 };
 
 game = new Phaser.Game(config);
