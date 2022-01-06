@@ -1,8 +1,9 @@
 // deno-lint-ignore-file no-var
 var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, level, dimensionsx, dimensionsy, aaaaa = false, oko, graczX, graczY,
     difficulty, opis, idgame, actualX, actualY, player2, id;
-let socket = new WebSocket('ws://25.89.121.208/join');
-let socket = new WebSocket('ws://'+window.location.hostname+'/join');
+    console.log("asdasd:"+window.location.hostname)
+    // let socket = new WebSocket('ws://localhost/join');
+    let socket = new WebSocket('ws://'+window.location.hostname+'/join');
 
 class LoadingScene extends Phaser.Scene {
     constructor() {
@@ -55,12 +56,13 @@ class LoadingScene extends Phaser.Scene {
         let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
         
         console.log("111111111111111111")
-        socket.send(temp)
+        // socket.send(temp)
         socket.addEventListener('open', function (event) {
             console.log("??????????????????????????????")
             console.log(temp)
             socket.send(temp)
         });
+
 
 
 
@@ -125,17 +127,17 @@ class Game extends Phaser.Scene {
     }
 
     create() {
-        const level = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ];
+        // const level = [
+        //     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        //     [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        //     [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        //     [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+        //     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        // ];
         //#region animacje
 
         this.anims.create({
