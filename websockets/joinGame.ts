@@ -32,9 +32,6 @@ function CheckIplay(array: Array<Game>, id: string): boolean {
 
 const sockets = new Map<string, WebSocket>();
 const r = new Random();
-
-
-
 let gamesArrary: Game[] = [];
 // console.log("lab", mazeGeneration(150,120));
 console.log("start", gamesArrary);
@@ -79,8 +76,8 @@ export async function websocetindex(sock: WebSocket) {
                   id: uid,
                   name: UserName,
                   idWebsocet: uid,
-                  x: element.dimensionsx - 1,
-                  y: element.dimensionsy - 1,
+                  x: element.dimensionsx*32*2 - 1,
+                  y: element.dimensionsy*32*2 - 1,
                 });
                 sockets.get(uid)?.send(
                   '{"id":"' + uid + '","idgame":"' + element.idgame + '"}',
@@ -104,6 +101,7 @@ export async function websocetindex(sock: WebSocket) {
           } else {
             let dataVreateGame: DataWebsocetGame = JSON.parse(ev);
             let idgame = r.string(5);
+            console.log("dataVreateGame.dimensionsx"+dataVreateGame.dimensionsx)
             gamesArrary.push(
               AddGame(
                 idgame,
@@ -117,7 +115,7 @@ export async function websocetindex(sock: WebSocket) {
                 )),
                 dataVreateGame.publicval,
                 dataVreateGame.difficulty,
-                [{ id: uid, name: UserName, idWebsocet: uid, x: 1, y: 1 }],
+                [{ id: uid, name: UserName, idWebsocet: uid, x: 30, y: 40 }],
               ),
             );
             sockets.get(uid)?.send(
@@ -126,6 +124,18 @@ export async function websocetindex(sock: WebSocket) {
           }
         } else if (obj.type === "broadcastMessage") {
           broadcastMessage("broadcastMessage", uid);
+        } else if (obj.type === "endGame") {
+          let dataWebsocetJoin: DataWebsocetJoin = JSON.parse(ev);
+          gamesArrary.forEach((gamesArraryVal) => {
+            if (gamesArraryVal.idgame == dataWebsocetJoin.idGame) {
+              gamesArraryVal.playersIdArrary.forEach((element) => {
+                if (element.id != dataWebsocetJoin.idPlayer) {
+                  sockets.get(element.idWebsocet)?.send('{"type":"endGame","name":"'+element.name+'"}');
+                }
+              });
+            }
+          });
+
         } else if (obj.type === "changeposition") {
           console.log(ev + "}}}}}}}}}}}}}}}}}");
           let tempPlayer: Player = JSON.parse(ev);
@@ -182,7 +192,8 @@ function mazeGeneration(dimensionsx: number, dimensionsy: number): string {
 let mazeSettings = {
   width: dimensionsx,
   height: dimensionsy,
-  algorithm: "recursive backtracker"
+  algorithm: "binary tree"
+  // algorithm: "recursive backtracker"
 }
 let m = Maze.create(mazeSettings);
 m.generate();

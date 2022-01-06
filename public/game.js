@@ -74,13 +74,22 @@ keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, 
             }
             socket.onmessage = function (event) {
                 console.log(event.data);
+
                 if (aaaaa === false) {
                     console.log(event.data);
     
                     let jsn = JSON.parse(event.data)
-                    console.log(jsn.map + ' ======================')
+                    console.log(jsn + ' ======================')
                     if (jsn.map != "") {
-                        console.log("jsn.map" + jsn.map)
+                        const playersArrary=JSON.parse(event.data).playersIdArrary
+                        if ( playersArrary[0].id==id) {
+                            actualX=playersArrary[0].x
+                            actualY=playersArrary[0].y
+                        }else{
+                            actualX=playersArrary[1].x
+                            actualY=playersArrary[1].y
+                        }
+                        console.log("playersIdArrary:"+playersArrary[1])
                         level = JSON.parse(JSON.parse(jsn.map))
                         dimensionsx = jsn.dimensionsx
                         dimensionsy = jsn.dimensionsy
@@ -208,7 +217,7 @@ class Game extends Phaser.Scene {
         potwory = this.physics.add.staticGroup();
         itemy = this.physics.add.staticGroup();
         player2 = this.add.sprite(3 * 32 + 8, 1 * 32, "postac")
-        player = this.physics.add.sprite(40, 32, "postac");
+        player = this.physics.add.sprite(actualX, actualY, "postac");
         player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
         this.cameras.main.startFollow(player, true);
@@ -217,8 +226,8 @@ class Game extends Phaser.Scene {
         this.cameras.main.setZoom(1.7);
         layer.mask = cien.createBitmapMask();
         this.scene.launch("Hud");
-        actualX = player.body.position.x
-        actualY = player.body.position.y
+          player.body.position.x =actualX
+          player.body.position.y=actualY
         // pętla zwracająca płytki z trzema ścianami dookoła
         layer.forEachTile(tile => {
             if (tile.index == 0) {
