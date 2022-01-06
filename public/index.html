@@ -22,10 +22,19 @@
         </header>
         <div class="form-check d-grid justify-content-center container">
 
-            <!-- 1 -->
-            <input class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="Nazwa gracza" type="text"
-                id="userName">
-            <button onclick="setUserName()" id="wybierzNazwe"
+            <input class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="Twoja nazwa gracza"
+                value="userNameEx" type="text" id="userName">
+            <input id="dimensionsx" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center"
+                placeholder="dimensionsx" type="number" value="5" min="5" max="50">
+            <input id="dimensionsy" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center"
+                placeholder="dimensionsy" type="number" value="4" min="4" max="50">
+            <input id="opis" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="opis">
+            <label for="publicval" style="color: white;text-align: center;">publicval</label>
+            <input id="publicval" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center"
+                placeholder="Twoja nazwa gracza" type="checkbox">
+            <label for="difficulty" style="color: white; text-align: center;">difficulty</label>
+            <input id="difficulty" type="range" id="vol" name="vol" min="0" max="2" value="0">
+            <button onclick="setUserName()"
                 class="p-3 fw-bolder mt-3 main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark">
                 wybierz nazwę
             </button>

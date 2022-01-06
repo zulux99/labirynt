@@ -215,9 +215,6 @@ class Game extends Phaser.Scene {
 function podniesItem(sprite, group) {
     console.log(group.frame.name);
     podniesItem.visible = true;
-    this.input.keyboard.on('keydown-F', function (event) {
-        console.log("dupa");
-    });
 }
 class Hud extends Phaser.Scene {
 
