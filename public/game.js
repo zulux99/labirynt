@@ -2,6 +2,7 @@
 var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, level, dimensionsx, dimensionsy, aaaaa = false, oko, graczX, graczY,
     difficulty, opis, idgame, actualX, actualY, player2, id;
 let socket = new WebSocket('ws://25.89.121.208/join');
+let socket = new WebSocket('ws://'+window.location.hostname+'/join');
 
 class LoadingScene extends Phaser.Scene {
     constructor() {

@@ -13,7 +13,7 @@ import {
   Player,
 } from "../models/gameModel.ts";
 import { Random } from "https://deno.land/x/random@v1.1.2/Random.js";
-
+import {Maze} from "https://x.nest.land/maze_generator@0.1.1/mod.js";
 function CheckIplay(array: Array<Game>, id: string): boolean {
   let temp: boolean = false;
   array.every((element) => {
@@ -32,9 +32,11 @@ function CheckIplay(array: Array<Game>, id: string): boolean {
 
 const sockets = new Map<string, WebSocket>();
 const r = new Random();
-// console.log(mazeGeneration(5, 4));
+
+
 
 let gamesArrary: Game[] = [];
+// console.log("lab", mazeGeneration(150,120));
 console.log("start", gamesArrary);
 export async function websocetindex(sock: WebSocket) {
   const uid = v4.generate();
@@ -174,120 +176,55 @@ function broadcastMessage(message: string, uid: string) {
   });
 }
 function mazeGeneration(dimensionsx: number, dimensionsy: number): string {
-  function wybieranie(
-    array: Array<Array<number>>,
-    x: number,
-    y: number,
-    a: number,
-    b: number,
-  ) {
-    if (array[y][x - 1] == 3 && x - 1 != a) {
-      array[y][x - 1] = 1;
-    }
-    if (array[y][x + 1] == 3 && x + 1 != a) {
-      array[y][x + 1] = 1;
-    }
-    if (array[y - 1][x] == 3 && y - 1 != b) {
-      array[y - 1][x] = 1;
-    }
-    if (array[y + 1][x] == 3 && y + 1 != b) {
-      array[y + 1][x] = 1;
-    }
-    return array;
-  }
   let mazeArrary = [];
-  for (let index = 0; index < (dimensionsy * 2) + 1; index++) {
-    mazeArrary[index] = Array((dimensionsx * 2) + 1).fill(1);
-  }
-  for (let indexy = 0; indexy < mazeArrary.length; indexy++) {
-    for (let indexx = 0; indexx < mazeArrary[indexy].length; indexx++) {
-      if (
-        indexy != 0 && indexy != (dimensionsy * 2) && indexx != 0 &&
-        indexx != (dimensionsx * 2)
-      ) {
-        if (indexy % 2 == 1 || indexx % 2 == 1) {
-          mazeArrary[indexy][indexx] = 0;
-          // mazeArrary[indexy][indexx] = 3;
-        }
-      }
+  // dimensionsx=50
+  // dimensionsy=60
+let mazeSettings = {
+  width: dimensionsx,
+  height: dimensionsy,
+  algorithm: "recursive backtracker"
+}
+let m = Maze.create(mazeSettings);
+m.generate();
+m.printString();
+for (let index = 0; index < dimensionsy*2+1 ; index++) {
+  mazeArrary[index] = Array();
+}
+let tempX , tempY
+
+mazeArrary[0][0]=1
+for (let indexY = 0; indexY < m.walls.length; indexY++) {
+  tempY=2*indexY
+  for (let indexX = 0; indexX <  m.walls[indexY].length; indexX++) {
+    tempX=2*indexX
+    if (indexX==0  ) {
+      mazeArrary[tempY+1][indexX]=1
+      mazeArrary[tempY+2][indexX]=1
+      
+    }  
+    if (indexY==0  ) {
+      mazeArrary[tempY][tempX]=1
+      mazeArrary[tempY][tempX+1]=1
+      mazeArrary[tempY][tempX+2]=1
+      
+    } 
+   
+    // console.log( m.walls[indexX][indexX]);
+    if (m.walls[indexY][indexX].S==true) {
+      mazeArrary[tempY+2][tempX+1]=1
+    }else{
+      mazeArrary[tempY+2][tempX+1]=0
     }
-  }
-
-  let x: number = r.int(1, (dimensionsx * 2) - 1);
-  let y: number = r.int(1, (dimensionsy * 2) - 1);
-
-  while (false) {
-    do {
-      y = (r.int(0, dimensionsy - 1) * 2) + 1;
-      x = (r.int(0, dimensionsx - 1) * 2) + 1;
-      x = 3;
-      y = 3;
-      console.log(x, y, mazeArrary[y][x], " a");
-    } while (mazeArrary[y][x] != 3);
-    mazeArrary[y][x] = 0;
-    while (true) {
-      console.log(mazeArrary, "==================");
-      let maxkierunek = 0;
-      if (mazeArrary[y - 1][x] == 3) {
-        maxkierunek += 1;
-      }
-      if (mazeArrary[y + 1][x] == 3) {
-        maxkierunek += 1;
-      }
-      if (mazeArrary[y][x - 1] == 3) {
-        maxkierunek += 1;
-      }
-      if (mazeArrary[y][x + 1] == 3) {
-        maxkierunek += 1;
-      }
-      if (maxkierunek == 0) {
-        break;
-      }
-      let kierunek = r.int(1, maxkierunek);
-      if (mazeArrary[y - 1][x] == 3 && kierunek != 0) {
-        kierunek -= 1;
-      }
-      if (kierunek == 0) {
-        mazeArrary[y - 1][x] = 0;
-        mazeArrary[y - 2][x] = 0;
-        mazeArrary = wybieranie(mazeArrary, x, y, x, y - 1);
-        y -= 2;
-        kierunek -= 1;
-      }
-      if (mazeArrary[y + 1][x] == 3 && kierunek != 0) {
-        kierunek -= 1;
-      }
-      if (kierunek == 0) {
-        mazeArrary[y + 1][x] = 0;
-        mazeArrary[y + 2][x] = 0;
-        mazeArrary = wybieranie(mazeArrary, x, y, x, y + 1);
-        y += 2;
-        kierunek -= 1;
-      }
-      if (mazeArrary[y][x - 1] == 3 && kierunek != 0) {
-        kierunek -= 1;
-      }
-      if (kierunek == 0) {
-        mazeArrary[y][x - 1] = 0;
-        mazeArrary[y][x - 2] = 0;
-        mazeArrary = wybieranie(mazeArrary, x, y, x - 1, y);
-        x -= 2;
-        kierunek -= 1;
-      }
-      if (mazeArrary[y][x + 1] == 3 && kierunek != 0) {
-        kierunek -= 1;
-      }
-      if (kierunek == 0) {
-        mazeArrary[y][x + 1] = 0;
-        mazeArrary[y][x + 2] = 0;
-        mazeArrary = wybieranie(mazeArrary, x, y, x, y - 1);
-        x += 2;
-        kierunek -= 1;
-      }
+    if (m.walls[indexY][indexX].E==true) {
+      mazeArrary[tempY+1][tempX+2]=1
+    }else{
+      mazeArrary[tempY+1][tempX+2]=0
     }
-
-    break;
+    mazeArrary[tempY+2][tempX+2]=1
+    mazeArrary[tempY+1][tempX+1]=0
   }
+  
+}
 
   return JSON.stringify(mazeArrary);
 }
