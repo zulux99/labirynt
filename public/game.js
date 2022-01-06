@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, graczX, graczY;
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, graczX, graczY,
+    keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem;
 class LoadingScene extends Phaser.Scene {
     constructor() {
         super('LoadingScene');
@@ -10,19 +11,20 @@ class LoadingScene extends Phaser.Scene {
             frameHeight: 500
         });
     }
-    create(){
+    create() {
         this.anims.create({
             key: 'loading',
-            frames: this.anims.generateFrameNumbers('ladowanie', 
-            {frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]}),
+            frames: this.anims.generateFrameNumbers('ladowanie',
+                { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] }),
             frameRate: 15,
             repeat: -1,
         });
         loading = this.add.sprite(0, 0, "loading");
+        loading.setOrigin(0.5)
         this.cameras.main.startFollow(loading, true);
         loading.play("loading", true);
         // if (ładowanie skończone) {
-            this.scene.start("Game");
+        this.scene.start("Game");
         // }
     }
 }
@@ -31,6 +33,7 @@ class Game extends Phaser.Scene {
         super('Game');
     }
     preload() {
+        this.load.image("singleToolbar", "assets/singleToolbar.png");
         this.load.image("oko", "assets/eye.png");
         this.load.image("maczuga", "assets/6.png");
         this.load.image("goRight", "assets/arrow_right.png");
@@ -46,6 +49,10 @@ class Game extends Phaser.Scene {
             frameWidth: 32,
             frameHeight: 32,
         });
+        this.load.spritesheet("wszystkieModele", "assets/spritesheet.png", {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
         // mapa
         this.load.tilemapCSV(
             "map",
@@ -55,10 +62,10 @@ class Game extends Phaser.Scene {
 
     create() {
         const level = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
@@ -100,6 +107,7 @@ class Game extends Phaser.Scene {
         //#endregion
         //#region zdefiniowanie klawiszy do poruszania postacią
         cursors = this.input.keyboard.createCursorKeys();
+        keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -113,21 +121,20 @@ class Game extends Phaser.Scene {
         layer = map.createStaticLayer(0, tileset, 0, 0);
         layer.setCollisionBetween(1, 2);
 
-
         // dystans widzenia
         cien = this.make.sprite({
             x: 20,
             y: 20,
             key: 'mask',
-            scale: 1.3,
+            scale: 1.5,
             add: false,
         });
-
         if (!this.sys.game.device.os.desktop) {
             this.cameras.main.y = -window.innerHeight * 0.2;
             this.cameras.main.setZoom(2.5);
         }
-        // oko = this.physics.add.sprite(6 * 32 + 16, 3 * 32 + 16, "oko");
+        potwory = this.physics.add.staticGroup();
+        itemy = this.physics.add.staticGroup();
         player = this.physics.add.sprite(40, 32, "postac");
         player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
@@ -136,39 +143,45 @@ class Game extends Phaser.Scene {
         this.cameras.main.setDeadzone(64, 64);
         this.cameras.main.setZoom(1.7);
         layer.mask = cien.createBitmapMask();
-        this.scene.launch("Hud")
+        this.scene.launch("Hud");
 
         // pętla zwracająca płytki z trzema ścianami dookoła
-        layer.forEachTile(tile =>{
-            if (tile.index == 0){
+        layer.forEachTile(tile => {
+            if (tile.index == 0) {
                 if (layer.getTileAt(tile.x - 1, tile.y).index == 0
-                && layer.getTileAt(tile.x + 1, tile.y).index == 1
-                && layer.getTileAt(tile.x, tile.y + 1).index == 1
-                && layer.getTileAt(tile.x, tile.y - 1).index == 1
-                ||
-                layer.getTileAt(tile.x - 1, tile.y).index == 1
-                && layer.getTileAt(tile.x + 1, tile.y).index == 0
-                && layer.getTileAt(tile.x, tile.y + 1).index == 1
-                && layer.getTileAt(tile.x, tile.y - 1).index == 1
-                ||
-                layer.getTileAt(tile.x - 1, tile.y).index == 1
-                && layer.getTileAt(tile.x + 1, tile.y).index == 1
-                && layer.getTileAt(tile.x, tile.y + 1).index == 0
-                && layer.getTileAt(tile.x, tile.y - 1).index == 1
-                ||
-                layer.getTileAt(tile.x - 1, tile.y).index == 1
-                && layer.getTileAt(tile.x + 1, tile.y).index == 1
-                && layer.getTileAt(tile.x, tile.y + 1).index == 1
-                && layer.getTileAt(tile.x, tile.y - 1).index == 0)
-                {
-                    console.log(tile.x)
-                    this.add.sprite(tile.x * 32 + 16, tile.y * 32 + 16, "oko")
+                    && layer.getTileAt(tile.x + 1, tile.y).index != 0
+                    && layer.getTileAt(tile.x, tile.y + 1).index != 0
+                    && layer.getTileAt(tile.x, tile.y - 1).index != 0
+                    ||
+                    layer.getTileAt(tile.x - 1, tile.y).index != 0
+                    && layer.getTileAt(tile.x + 1, tile.y).index == 0
+                    && layer.getTileAt(tile.x, tile.y + 1).index != 0
+                    && layer.getTileAt(tile.x, tile.y - 1).index != 0
+                    ||
+                    layer.getTileAt(tile.x - 1, tile.y).index != 0
+                    && layer.getTileAt(tile.x + 1, tile.y).index != 0
+                    && layer.getTileAt(tile.x, tile.y + 1).index == 0
+                    && layer.getTileAt(tile.x, tile.y - 1).index != 0
+                    ||
+                    layer.getTileAt(tile.x - 1, tile.y).index != 0
+                    && layer.getTileAt(tile.x + 1, tile.y).index != 0
+                    && layer.getTileAt(tile.x, tile.y + 1).index != 0
+                    && layer.getTileAt(tile.x, tile.y - 1).index == 0) {
+                    itemy.create(tile.x * 32 + 16, tile.y * 32 + 16, "wszystkieModele", 500);
+                    // potwory.create(tile.x * 32 + 16, tile.y * 32 + 16, "wszystkieModele", 5);
                 }
             }
+        });
+        this.physics.add.collider(player, potwory);
+        itemy.children.entries.forEach(item => {
+            item.mask = cien.createBitmapMask();
+        })
+        potwory.children.entries.forEach(potwor => {
+            potwor.mask = cien.createBitmapMask();
         })
         player.setDepth(1);
+        this.physics.add.overlap(player, itemy, podniesItem);
     }
-
     update() {
         graczX = parseInt((player.body.position.x + 8) / 32)
         graczY = parseInt((player.body.position.y + 8) / 32)
@@ -199,12 +212,56 @@ class Game extends Phaser.Scene {
         cien.y = player.body.position.y + 8;
     }
 }
+function podniesItem(sprite, group) {
+    console.log(group.frame.name);
+    podniesItem.visible = true;
+    this.input.keyboard.on('keydown-F', function (event) {
+        console.log("dupa");
+    });
+}
 class Hud extends Phaser.Scene {
 
     constructor() {
         super("Hud");
     }
     create() {
+        podniesItem = this.add.text(window.innerWidth / 2, window.innerHeight * 0.1, "Kliknij F aby podnieść", { fontSize: "35px" });
+        podniesItem.setOrigin(0.5);
+        tool3 = this.add.image(window.innerWidth / 2, window.innerHeight * 0.85, "singleToolbar")
+        tool3.setOrigin(0);
+        tool3.setScale(2.5);
+        tool4 = this.add.image(tool3.x + 32 * tool3._scaleX, tool3.y, "singleToolbar")
+        tool4.setOrigin(0);
+        tool4.setScale(2.5);
+        tool2 = this.add.image(tool3.x - 32 * tool3._scaleX, tool3.y, "singleToolbar")
+        tool2.setOrigin(0);
+        tool2.setScale(2.5);
+        tool1 = this.add.image(tool2.x - 32 * tool3._scaleX, tool3.y, "singleToolbar")
+        tool1.setOrigin(0);
+        tool1.setScale(2.5);
+        test = this.add.sprite(tool1.x + tool3.width * tool3._scaleX / 2, tool1.y + tool3.height * tool3._scaleX / 2, "maczuga");
+        test.setScale(tool3._scaleX);
+        test.angle -= 45;
+        this.timer = this.add.text(10, 10, "0:00", { fontSize: "40px" });
+        var minuty = 0;
+        var sekundy = 0;
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                sekundy++;
+                if (sekundy == 60) {
+                    sekundy = 0;
+                    minuty++;
+                }
+                if (sekundy < 10) {
+                    this.timer.setText(minuty + ":0" + sekundy);
+                }
+                else {
+                    this.timer.setText(minuty + ":" + sekundy);
+                }
+            },
+            loop: true
+        })
         //#region strzalki na telefonie
         if (!this.sys.game.device.os.desktop) {
             this.goLeft = this.add.image(window.innerWidth * 0.3, window.innerHeight * 0.7, 'goLeft').setInteractive();
@@ -259,7 +316,6 @@ class Hud extends Phaser.Scene {
             }, this);
         }
         //#endregion
-
     }
 }
 const config = {
