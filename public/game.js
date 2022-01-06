@@ -1,33 +1,105 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, graczX, graczY,
-    keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem;
-class LoadingScene extends Phaser.Scene {
-    constructor() {
-        super('LoadingScene');
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, aaaaa = false, graczX, graczY,level, 
+keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY,dimensionsx ,dimensionsy ,
+    difficulty, opis, idgame, actualX, actualY, player2, id;
+    
+    console.log("asdasd:"+window.location.hostname)
+    // let socket = new WebSocket('ws://localhost/join');
+    let socket = new WebSocket('ws://'+window.location.hostname+'/join');
+    class LoadingScene extends Phaser.Scene {
+        constructor() {
+            super('LoadingScene');
+        }
+        preload() {
+            this.load.spritesheet("ladowanie", "assets/loading.png", {
+                frameWidth: 500,
+                frameHeight: 500
+            });
+        }
+        create() {
+            this.anims.create({
+                key: 'loading',
+                frames: this.anims.generateFrameNumbers('ladowanie', {
+                    frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+                }),
+                frameRate: 15,
+                repeat: -1,
+            });
+    
+            function getCookie(cname) {
+                let name = cname + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
+    
+    
+    
+            loading = this.add.sprite(0, 0, "loading");
+            this.cameras.main.startFollow(loading, true);
+            loading.play("loading", true);
+            id = getCookie("id");
+            let idgame = getCookie("idgame");
+            console.log(id + " " + idgame)
+            if (id === '' || idgame === '') {
+                console.log(id + " " + idgame)
+                window.location.href = '/';
+            }
+            let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
+            
+            console.log("111111111111111111")
+            // socket.send(temp)
+            socket.addEventListener('open', function (event) {
+                console.log("??????????????????????????????")
+                console.log(temp)
+                socket.send(temp)
+            });
+    
+    
+    
+    
+        }
+        update() {
+            if (aaaaa == false) {
+    
+            }
+            socket.onmessage = function (event) {
+                console.log(event.data);
+                if (aaaaa === false) {
+                    console.log(event.data);
+    
+                    let jsn = JSON.parse(event.data)
+                    console.log(jsn.map + ' ======================')
+                    if (jsn.map != "") {
+                        console.log("jsn.map" + jsn.map)
+                        level = JSON.parse(JSON.parse(jsn.map))
+                        dimensionsx = jsn.dimensionsx
+                        dimensionsy = jsn.dimensionsy
+                        opis = jsn.opis
+                        idgame = jsn.idgame
+                        difficulty = jsn.difficulty
+                        aaaaa = true
+                    }
+                }
+    
+            }
+    
+            if (aaaaa) {
+                aaaaa = ""
+    
+                this.scene.start("Game");
+            }
+        }
     }
-    preload() {
-        this.load.spritesheet("ladowanie", "assets/loading.png", {
-            frameWidth: 500,
-            frameHeight: 500
-        });
-    }
-    create() {
-        this.anims.create({
-            key: 'loading',
-            frames: this.anims.generateFrameNumbers('ladowanie',
-                { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] }),
-            frameRate: 15,
-            repeat: -1,
-        });
-        loading = this.add.sprite(0, 0, "loading");
-        loading.setOrigin(0.5)
-        this.cameras.main.startFollow(loading, true);
-        loading.play("loading", true);
-        // if (ładowanie skończone) {
-        this.scene.start("Game");
-        // }
-    }
-}
 class Game extends Phaser.Scene {
     constructor() {
         super('Game');
@@ -61,19 +133,19 @@ class Game extends Phaser.Scene {
     }
 
     create() {
-        const level = [
-            [1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-            [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ];
+        // const level = [
+        //     [1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 2],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        //     [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+        //     [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        //     [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+        //     [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+        //     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        // ];
         //#region animacje
-
+        
         this.anims.create({
             key: 'idle',
             frames: this.anims.generateFrameNumbers('postac', { frames: [1] }),
@@ -135,6 +207,7 @@ class Game extends Phaser.Scene {
         }
         potwory = this.physics.add.staticGroup();
         itemy = this.physics.add.staticGroup();
+        player2 = this.add.sprite(3 * 32 + 8, 1 * 32, "postac")
         player = this.physics.add.sprite(40, 32, "postac");
         player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
@@ -144,7 +217,8 @@ class Game extends Phaser.Scene {
         this.cameras.main.setZoom(1.7);
         layer.mask = cien.createBitmapMask();
         this.scene.launch("Hud");
-
+        actualX = player.body.position.x
+        actualY = player.body.position.y
         // pętla zwracająca płytki z trzema ścianami dookoła
         layer.forEachTile(tile => {
             if (tile.index == 0) {
@@ -210,6 +284,35 @@ class Game extends Phaser.Scene {
         // dystans widzenia porusza się z graczem
         cien.x = player.body.position.x + 8;
         cien.y = player.body.position.y + 8;
+ 
+        // if (actualX != player.body.position.x || actualY != player.body.position.y)
+        if ( Math.abs( actualX-player.body.position.x) > 16 || Math.abs( actualY-player.body.position.y) > 16 ) {
+            let abc = '{"type":"changeposition","name":"' + idgame + '","id":"' + id + '","x":"' + player.body.position.x + '","y":"' + player.body.position.y + '"}'
+            console.log(abc)
+            socket.send(abc)
+            actualX = player.body.position.x
+            actualY = player.body.position.y
+        }
+        socket.onmessage = function (event) {
+            // console.log("....................................");
+            console.log(" dane wejsciopwe " + event.data);
+
+            let changexyval = JSON.parse(event.data)
+
+            console.log(" json ons " + changexyval);
+            changexyval.forEach(element => {
+                if (element.id != id) {
+                    player2.setPosition(element.x, element.y);
+                }
+            });
+
+
+        }
+        socket.onclose = function (event) {
+            window.location.href = "/";
+        };
+
+
     }
 }
 function podniesItem(sprite, group) {
