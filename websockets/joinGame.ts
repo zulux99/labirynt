@@ -78,6 +78,7 @@ export async function websocetindex(sock: WebSocket) {
                   idWebsocet: uid,
                   x: element.dimensionsx*32*2 - 1,
                   y: element.dimensionsy*32*2 - 1,
+                  isPlaying: false,
                 });
                 sockets.get(uid)?.send(
                   '{"id":"' + uid + '","idgame":"' + element.idgame + '"}',
@@ -107,7 +108,7 @@ export async function websocetindex(sock: WebSocket) {
                 idgame,
                 dataVreateGame.dimensionsx,
                 dataVreateGame.dimensionsy,
-                dataVreateGame.playerMaxCount,
+                2,
                 dataVreateGame.opis,
                 JSON.stringify(mazeGeneration(
                   dataVreateGame.dimensionsx,
@@ -115,7 +116,7 @@ export async function websocetindex(sock: WebSocket) {
                 )),
                 dataVreateGame.publicval,
                 dataVreateGame.difficulty,
-                [{ id: uid, name: UserName, idWebsocet: uid, x: 30, y: 40 }],
+                [{ id: uid, name: UserName, idWebsocet: uid, x: 30, y: 40 ,isPlaying:false}],
               ),
             );
             sockets.get(uid)?.send(
@@ -124,6 +125,29 @@ export async function websocetindex(sock: WebSocket) {
           }
         } else if (obj.type === "broadcastMessage") {
           broadcastMessage("broadcastMessage", uid);
+        }else if (obj.type === "playing") {
+          let dataVreateJoin: DataWebsocetJoin = JSON.parse(ev);
+          console.log(dataVreateJoin);
+          if (dataVreateJoin.idGame != undefined) {
+            gamesArrary.forEach((element) => {
+              if (element.idgame == dataVreateJoin.idGame) {
+                if (element.playerMaxCount >  element.playersIdArrary.length) {
+                  sockets.get(uid)?.send(
+                    '{"mess":"wait"}'
+                  );
+                }else{
+                  
+                  sockets.get(uid)?.send(
+                    '{"mess":"start"}'
+                  );
+                  element.playersIdArrary.forEach((val) => {
+                    sockets.get(val.idWebsocet)?.send('{"mess":"start"}');
+                  });
+
+                }
+              }
+            });
+          } 
         } else if (obj.type === "endGame") {
           let dataWebsocetJoin: DataWebsocetJoin = JSON.parse(ev);
           gamesArrary.forEach((gamesArraryVal) => {

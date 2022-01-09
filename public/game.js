@@ -1,11 +1,15 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, aaaaa = false, graczX, graczY, level,
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, mapaHas = false,start  = false,graczX, graczY, level,
     keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY, dimensionsx, dimensionsy,
-    difficulty, opis, idgame, actualX, actualY, player2, id, timer;
+    difficulty, opis, idgame, actualX, actualY, player2, id, timer,czekam;
 
 console.log("asdasd:" + window.location.hostname)
+
 // let socket = new WebSocket('ws://localhost/join');
 let socket = new WebSocket('ws://' + window.location.hostname + '/join');
+socket.onclose = function (event) {
+    window.location.href = "/";
+};
 class LoadingScene extends Phaser.Scene {
     constructor() {
         super('LoadingScene');
@@ -53,27 +57,38 @@ class LoadingScene extends Phaser.Scene {
         }
         let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
 
+            console.log(temp)
         console.log("111111111111111111")
         // socket.send(temp)
+        if (socket.readyState== WebSocket.OPEN ) {
+            console.log("??????????????????????????????")
+            
+             socket.send(temp)
+        }
         socket.addEventListener('open', function (event) {
             console.log("??????????????????????????????")
-            console.log(temp)
-            socket.send(temp)
+            
+             socket.send(temp)
         });
+       
     }
     update() {
-        if (aaaaa == false) {
+       
+        
+        if (mapaHas == false) {
+            this.add.text(window.innerWidth / 64, window.innerHeight * 0.2, "czekamy na innego gracza ", { fontSize: "35px" }).setOrigin(0.5)
 
-        }
+        
         socket.onmessage = function (event) {
             console.log(event.data);
-            if (aaaaa === false) {
+            
+            let jsn = JSON.parse(event.data)
+            if (mapaHas === false) {
                 console.log(event.data);
 
-                if (aaaaa === false) {
+                if (mapaHas === false) {
                     console.log(event.data);
     
-                    let jsn = JSON.parse(event.data)
                     console.log(jsn + ' ======================')
                     if (jsn.map != "") {
                         const playersArrary=JSON.parse(event.data).playersIdArrary
@@ -91,14 +106,31 @@ class LoadingScene extends Phaser.Scene {
                         opis = jsn.opis
                         idgame = jsn.idgame
                         difficulty = jsn.difficulty
-                        aaaaa = true
+                        mapaHas = true
+                        
+                        let temp = '{"type":"playing","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
+                        socket.send(temp)
                     }
+                }
+            }else if (jsn.mess!='') {
+                if (jsn.mess=='wait') {
+                    console.log('czekamy')
+                    
+                }else if(jsn.mess=='start'){
+                    console.log('startuejmy')
+                    start=true
                 }
             }
 
         }
-        if (aaaaa) {
-            aaaaa = ""
+        
+    }
+        if (mapaHas && start == false) {
+            this.add.text(window.innerWidth / 64, window.innerHeight * 0.1, "1/2", { fontSize: "35px" }).setOrigin(0.5)
+
+        }
+        if (mapaHas && start) {
+            mapaHas = ""
 
             this.scene.start("Game");
         }
@@ -235,11 +267,11 @@ class Game extends Phaser.Scene {
                     && layer.getTileAt(tile.x, tile.y + 1).index != 0
                     && layer.getTileAt(tile.x, tile.y - 1).index != 0
                     ||
-                    layer.getTileAt(tile.x - 1, tile.y).index != 0
-                    && layer.getTileAt(tile.x + 1, tile.y).index != 0
-                    && layer.getTileAt(tile.x, tile.y + 1).index == 0
-                    && layer.getTileAt(tile.x, tile.y - 1).index != 0
-                    ||
+                    // layer.getTileAt(tile.x - 1, tile.y).index != 0
+                    // && layer.getTileAt(tile.x + 1, tile.y).index != 0
+                    // && layer.getTileAt(tile.x, tile.y + 1).index == 0
+                    // && layer.getTileAt(tile.x, tile.y - 1).index != 0
+                    // ||
                     layer.getTileAt(tile.x - 1, tile.y).index != 0
                     && layer.getTileAt(tile.x + 1, tile.y).index != 0
                     && layer.getTileAt(tile.x, tile.y + 1).index != 0
@@ -259,9 +291,9 @@ class Game extends Phaser.Scene {
         player.setDepth(1);
         this.physics.add.overlap(player, itemy, this.podniesItem);
     }
-    podniesItem(sprite, group) {
+    podniesItem(w, group) {
         game.scene.start("KoniecGry");
-        console.log(group.frame.name);
+        console.log(group.frame.name);a
         podniesItem.visible = true;
     }
     update() {
@@ -306,17 +338,18 @@ class Game extends Phaser.Scene {
             console.log(" dane wejsciopwe " + event.data);
 
             let changexyval = JSON.parse(event.data)
-
+            if (changexyval.type=="endGame") {
+                
+             game.scene.start("KoniecGry");
+            }else{
             console.log(" json ons " + changexyval);
             changexyval.forEach(element => {
                 if (element.id != id) {
                     player2.setPosition(element.x, element.y);
                 }
-            });
+            });}
         }
-        socket.onclose = function (event) {
-            window.location.href = "/";
-        };
+       
     }
 }
 class Hud extends Phaser.Scene {
@@ -424,6 +457,9 @@ class KoniecGry extends Phaser.Scene {
         super("KoniecGry");
     }
     create() {
+        
+        let temp = '{"type":"endGame","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
+        socket.send(temp)
         this.graphics = this.add.graphics();
         this.graphics.lineStyle(10,0x222222);
         this.graphics.fillStyle(0x111111, .9);

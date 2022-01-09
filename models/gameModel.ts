@@ -8,6 +8,7 @@ export interface Game {
   publicval: Boolean;
   difficulty: number;
   playersIdArrary: Array<Player>;
+  start?:Date;
 }
 export function AddGame(
   idgame: string,
@@ -42,6 +43,7 @@ export interface Player {
   x?: number;
   y?: number;
   idWebsocet: string;
+  isPlaying:boolean;
 }
 export interface DataWebsocetGame {
   type: string;
