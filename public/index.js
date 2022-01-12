@@ -87,6 +87,8 @@ function prepareGame(){
     document.getElementById("dolaczDoGry").hidden = true;
     document.getElementById("dimensionsx").hidden = false;
     document.getElementById("dimensionsy").hidden = false;
+    document.getElementById("publicval").hidden = false;
+    document.getElementById("publicvalLabel").hidden = false;
     document.getElementById("utworz").hidden = false;
 }
 function addGame() {

@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-var
-var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, mapaHas = false,start  = false,graczX, graczY, level,
+var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, mapaHas = false, start = false, graczX, graczY, level,
     keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY, dimensionsx, dimensionsy,
-    difficulty, opis, idgame, actualX, actualY, player2, id, timer,czekam;
+    difficulty, opis, idgame, actualX, actualY, player2, id, timer, czekam;
 
 console.log("asdasd:" + window.location.hostname)
 
@@ -57,76 +57,71 @@ class LoadingScene extends Phaser.Scene {
         }
         let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
 
-            console.log(temp)
+        console.log(temp)
         console.log("111111111111111111")
         // socket.send(temp)
-        if (socket.readyState== WebSocket.OPEN ) {
+        if (socket.readyState == WebSocket.OPEN) {
             console.log("??????????????????????????????")
-            
-             socket.send(temp)
+
+            socket.send(temp)
         }
         socket.addEventListener('open', function (event) {
             console.log("??????????????????????????????")
-            
-             socket.send(temp)
+
+            socket.send(temp)
         });
-       
+
     }
     update() {
-       
-        
+
+
         if (mapaHas == false) {
-            this.add.text(window.innerWidth / 64, window.innerHeight * 0.2, "czekamy na innego gracza ", { fontSize: "35px" }).setOrigin(0.5)
-
-        
-        socket.onmessage = function (event) {
-            console.log(event.data);
-            
-            let jsn = JSON.parse(event.data)
-            if (mapaHas === false) {
+            this.add.text(window.innerWidth / 1000, window.innerHeight * 0.2, "czekamy na innego gracza ", { fontSize: "35px" }).setOrigin(0.5)
+            socket.onmessage = function (event) {
                 console.log(event.data);
-
+                let jsn = JSON.parse(event.data)
                 if (mapaHas === false) {
                     console.log(event.data);
-    
-                    console.log(jsn + ' ======================')
-                    if (jsn.map != "") {
-                        const playersArrary=JSON.parse(event.data).playersIdArrary
-                        if ( playersArrary[0].id==id) {
-                            actualX=playersArrary[0].x
-                            actualY=playersArrary[0].y
-                        }else{
-                            actualX=playersArrary[1].x
-                            actualY=playersArrary[1].y
+                    if (mapaHas === false) {
+                        console.log(event.data);
+                        console.log(jsn + ' ======================')
+                        if (jsn.map != "") {
+                            const playersArrary = JSON.parse(event.data).playersIdArrary
+                            if (playersArrary[0].id == id) {
+                                actualX = playersArrary[0].x
+                                actualY = playersArrary[0].y
+                            } else {
+                                actualX = playersArrary[1].x
+                                actualY = playersArrary[1].y
+                            }
+                            console.log("playersIdArrary:" + playersArrary[1])
+                            level = JSON.parse(JSON.parse(jsn.map))
+                            dimensionsx = jsn.dimensionsx
+                            dimensionsy = jsn.dimensionsy
+                            opis = jsn.opis
+                            idgame = jsn.idgame
+                            difficulty = jsn.difficulty
+                            mapaHas = true
+
+                            let temp = '{"type":"playing","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
+                            socket.send(temp)
                         }
-                        console.log("playersIdArrary:"+playersArrary[1])
-                        level = JSON.parse(JSON.parse(jsn.map))
-                        dimensionsx = jsn.dimensionsx
-                        dimensionsy = jsn.dimensionsy
-                        opis = jsn.opis
-                        idgame = jsn.idgame
-                        difficulty = jsn.difficulty
-                        mapaHas = true
-                        
-                        let temp = '{"type":"playing","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
-                        socket.send(temp)
+                    }
+                } else if (jsn.mess != '') {
+                    if (jsn.mess == 'wait') {
+                        console.log('czekamy')
+
+                    } else if (jsn.mess == 'start') {
+                        console.log('startuejmy')
+                        start = true
                     }
                 }
-            }else if (jsn.mess!='') {
-                if (jsn.mess=='wait') {
-                    console.log('czekamy')
-                    
-                }else if(jsn.mess=='start'){
-                    console.log('startuejmy')
-                    start=true
-                }
+
             }
 
         }
-        
-    }
         if (mapaHas && start == false) {
-            this.add.text(window.innerWidth / 64, window.innerHeight * 0.1, "1/2", { fontSize: "35px" }).setOrigin(0.5)
+            this.add.text(window.innerWidth / 1000, window.innerHeight * 0.1, "1/2", { fontSize: "35px" }).setOrigin(0.5)
 
         }
         if (mapaHas && start) {
@@ -154,6 +149,10 @@ class Game extends Phaser.Scene {
         this.load.image("tiles", "assets/mapa.png");
         // postac
         this.load.spritesheet("postac", "assets/postac.png", {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
+        this.load.spritesheet("przeciwnik", "assets/przeciwnik.png", {
             frameWidth: 32,
             frameHeight: 32,
         });
@@ -241,7 +240,8 @@ class Game extends Phaser.Scene {
         }
         potwory = this.physics.add.staticGroup();
         itemy = this.physics.add.staticGroup();
-        player2 = this.add.sprite(3 * 32 + 8, 1 * 32, "postac")
+        player2 = this.add.sprite(3 * 32 + 8, 1 * 32, "przeciwnik");
+        player2.setFrame("1");
         player = this.physics.add.sprite(actualX, actualY, "postac");
         player.body.setSize(16, 16).setOffset(8, 16);
         this.physics.add.collider(player, layer);
@@ -252,8 +252,8 @@ class Game extends Phaser.Scene {
         layer.mask = cien.createBitmapMask();
         player2.mask = cien.createBitmapMask();
         this.scene.launch("Hud");
-          player.body.position.x =actualX
-          player.body.position.y=actualY
+        player.body.position.x = actualX
+        player.body.position.y = actualY
         // pętla zwracająca płytki z trzema ścianami dookoła
         layer.forEachTile(tile => {
             if (tile.index == 0) {
@@ -293,7 +293,7 @@ class Game extends Phaser.Scene {
     }
     podniesItem(w, group) {
         game.scene.start("KoniecGry");
-        console.log(group.frame.name);a
+        console.log(group.frame.name); a
         podniesItem.visible = true;
     }
     update() {
@@ -338,18 +338,19 @@ class Game extends Phaser.Scene {
             console.log(" dane wejsciopwe " + event.data);
 
             let changexyval = JSON.parse(event.data)
-            if (changexyval.type=="endGame") {
-                
-             game.scene.start("KoniecGry");
-            }else{
-            console.log(" json ons " + changexyval);
-            changexyval.forEach(element => {
-                if (element.id != id) {
-                    player2.setPosition(element.x, element.y);
-                }
-            });}
+            if (changexyval.type == "endGame") {
+
+                game.scene.start("KoniecGry");
+            } else {
+                console.log(" json ons " + changexyval);
+                changexyval.forEach(element => {
+                    if (element.id != id) {
+                        player2.setPosition(element.x, element.y);
+                    }
+                });
+            }
         }
-       
+
     }
 }
 class Hud extends Phaser.Scene {
@@ -457,20 +458,20 @@ class KoniecGry extends Phaser.Scene {
         super("KoniecGry");
     }
     create() {
-        
+
         let temp = '{"type":"endGame","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
         socket.send(temp)
         this.graphics = this.add.graphics();
-        this.graphics.lineStyle(10,0x222222);
+        this.graphics.lineStyle(10, 0x222222);
         this.graphics.fillStyle(0x111111, .9);
         var iw = window.innerWidth
         var ih = window.innerHeight
         this.graphics.strokeRect(iw / 2 - iw / 4, ih / 2 - ih / 4, iw / 2, ih / 2);
         this.graphics.fillRect(iw / 2 - iw / 4, ih / 2 - ih / 4, iw / 2, ih / 2);
         this.wygralGracz = this.add.text(
-        iw / 2,
-        ih / 2 - ih / 5,
-        "Wygrał gracz:", {
+            iw / 2,
+            ih / 2 - ih / 5,
+            "Wygrał gracz:", {
             font: "40px Arial",
             color: "#ffffff"
         }
@@ -478,8 +479,8 @@ class KoniecGry extends Phaser.Scene {
         this.wygralGracz.setOrigin(0.5);
         this.nickname = this.add.text(
             iw / 2,
-        ih / 2 - ih / 8,
-        "Jakiś gracz", {
+            ih / 2 - ih / 8,
+            "Jakiś gracz", {
             font: "30px Arial",
             color: "#ffffff"
         }

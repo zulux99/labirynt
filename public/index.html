@@ -51,24 +51,26 @@
 
             <!-- dołącz -->
             <input  class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="ID gry"
-                type="text" id="idGry">
+                type="text" id="idGry" hidden>
             <button  id="dolacz" onclick="join()"
-                class="p-3 fw-bolder mt-3 main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark">
+                class="p-3 fw-bolder mt-3 main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark" hidden>
                 dołącz
             </button>
             
             <!-- utwórz -->
             <input  id="dimensionsx" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center"
-                placeholder="Szerokość labiryntu" type="number" min="5" max="50">
+                placeholder="Szerokość labiryntu" type="number" min="5" max="50" hidden>
             <input  id="dimensionsy" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center"
-                placeholder="Wysokość labiryntu" type="number" min="4" max="50">
-            <input  id="opis" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="opis">
-            <label  for="publicval" style="color: white;text-align: center;">publicval</label>
-            <input  id="publicval" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" type="checkbox">
-            <label  for="difficulty" style="color: white; text-align: center;">difficulty</label>
-            <input  id="difficulty" type="range" id="vol" name="vol" min="0" max="2" value="0">
+                placeholder="Wysokość labiryntu" type="number" min="4" max="50" hidden>
+            <input  id="opis" class="bg-opacity-75 bg-white p-3 rounded-pill h5 text-center" placeholder="opis" hidden>
+            <div class="form-check">
+                <label  id="publicvalLabel"for="publicval" style="color: white;text-align: center;" class="form-check-label h5" hidden>publicval</label>
+                <input  id="publicval" class="form-check-input" type="checkbox" hidden>
+            </div>
+            <label  for="difficulty" style="color: white; text-align: center;" hidden>difficulty</label>
+            <input  id="difficulty" type="range" id="vol" name="vol" min="0" max="2" value="0" hidden>
             <button  id="utworz" onclick="addGame()"
-                class="p-3 mt-3 px-5 fw-bolder main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark">
+                class="p-3 mt-3 px-5 fw-bolder main-color text-black text-uppercase rounded-pill h5 bg-main-color border-dark" hidden>
                 utwórz grę
             </button>
 
