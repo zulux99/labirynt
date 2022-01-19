@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-var
 var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading, oko, mapaHas = false, start = false, graczX, graczY, level,
     keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY, dimensionsx, dimensionsy,
-    difficulty, opis, idgame, actualX, actualY, player2, id, timer, czekam;
+    difficulty, opis, idgame, actualX, actualY, player2, id, timer, czekam,timeStart=0;
 
 console.log("asdasd:" + window.location.hostname)
 
@@ -113,6 +113,7 @@ class LoadingScene extends Phaser.Scene {
 
                     } else if (jsn.mess == 'start') {
                         console.log('startuejmy')
+                        timeStart=jsn.timeStart
                         start = true
                     }
                 }
@@ -379,23 +380,23 @@ class Hud extends Phaser.Scene {
         timer = this.add.text(10, 10, "0:00", { fontSize: "40px" });
         var minuty = 0;
         var sekundy = 0;
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                sekundy++;
-                if (sekundy == 60) {
-                    sekundy = 0;
-                    minuty++;
-                }
-                if (sekundy < 10) {
-                    timer.setText(minuty + ":0" + sekundy);
-                }
-                else {
-                    timer.setText(minuty + ":" + sekundy);
-                }
-            },
-            loop: true
-        })
+        // this.time.addEvent({
+        //     delay: 1000,
+        //     callback: () => {
+        //         sekundy++;
+        //         if (sekundy == 60) {
+        //             sekundy = 0;
+        //             minuty++;
+        //         }
+        //         if (sekundy < 10) {
+        //             timer.setText(minuty + ":0" + sekundy);
+        //         }
+        //         else {
+        //             timer.setText(minuty + ":" + sekundy);timeStart
+        //         }
+        //     },
+        //     loop: true
+        // })
         //#region strzalki na telefonie
         if (!this.sys.game.device.os.desktop) {
             this.goLeft = this.add.image(window.innerWidth * 0.3, window.innerHeight * 0.7, 'goLeft').setInteractive();
@@ -414,6 +415,8 @@ class Hud extends Phaser.Scene {
         //#endregion
     }
     update() {
+
+        timer.setText(new Date( new Date().getTime()-timeStart ).getMinutes() + ":" + new Date( new Date().getTime()-timeStart).getSeconds());
         //#region poruszanie się na telefonie
         if (!this.sys.game.device.os.desktop) {
             this.goLeft.on('pointerdown', function (pointer) {
@@ -488,6 +491,8 @@ class KoniecGry extends Phaser.Scene {
         this.nickname.setOrigin(0.5)
         this.scene.pause("Game")
         timer.visible = false;
+        timer.setText(new Date( new Date().getTime()-timeStart ).getMinutes() + ":" + new Date( new Date().getTime()-timeStart).getSeconds());
+        
         this.timerKoncowy = this.add.text(iw / 2, ih / 2, "Czas trwania gry: " + timer.text, { fontSize: "30px" });
         this.timerKoncowy.setOrigin(0.5);
     }

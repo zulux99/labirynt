@@ -8,7 +8,7 @@ export interface Game {
   publicval: Boolean;
   difficulty: number;
   playersIdArrary: Array<Player>;
-  start?:Date;
+  start?:number;
 }
 export function AddGame(
   idgame: string,

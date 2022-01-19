@@ -14,6 +14,7 @@ import {
 } from "../models/gameModel.ts";
 import { Random } from "https://deno.land/x/random@v1.1.2/Random.js";
 import {Maze} from "https://x.nest.land/maze_generator@0.1.1/mod.js";
+
 function CheckIplay(array: Array<Game>, id: string): boolean {
   let temp: boolean = false;
   array.every((element) => {
@@ -70,7 +71,7 @@ export async function websocetindex(sock: WebSocket) {
             });
           } else {
             let a = true;
-            gamesArrary.every((element) => {
+            gamesArrary.forEach((element) => {
               if (element.playerMaxCount > element.playersIdArrary.length) {
                 element.playersIdArrary.push({
                   id: uid,
@@ -136,12 +137,15 @@ export async function websocetindex(sock: WebSocket) {
                     '{"mess":"wait"}'
                   );
                 }else{
-                  
-                  sockets.get(uid)?.send(
-                    '{"mess":"start"}'
-                  );
+                  if (typeof element.start == "undefined") {
+                    
+                  element.start=Date.now()
+                  }
+                  // sockets.get(uid)?.send(
+                  //   // '{"mess":"start","timeStart":"'+element.start+'"}'
+                  // );
                   element.playersIdArrary.forEach((val) => {
-                    sockets.get(val.idWebsocet)?.send('{"mess":"start"}');
+                    sockets.get(val.idWebsocet)?.send('{"mess":"start","timeStart":"'+element.start+'"}');
                   });
 
                 }
