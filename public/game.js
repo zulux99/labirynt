@@ -3,7 +3,6 @@ var cursors, map, player, tileset, layer, cien, keyW, keyA, keyS, keyD, loading,
     keyF, tool1, tool2, tool3, tool4, potwory, itemy, a, test, podniesItem, graczX, graczY, dimensionsx, dimensionsy,
     difficulty, opis, idgame, actualX, actualY, player2, id, timer, czekam,timeStart=0;
 
-console.log("asdasd:" + window.location.hostname)
 
 // let socket = new WebSocket('ws://localhost/join');
 let socket = new WebSocket('ws://' + window.location.hostname + '/join');
@@ -50,42 +49,34 @@ class LoadingScene extends Phaser.Scene {
         loading.play("loading", true);
         id = getCookie("id");
         let idgame = getCookie("idgame");
-        console.log(id + " " + idgame)
         if (id === '' || idgame === '') {
-            console.log(id + " " + idgame)
             window.location.href = '/';
         }
         let temp = '{"type":"join","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
 
-        console.log(temp)
-        console.log("111111111111111111")
         // socket.send(temp)
         if (socket.readyState == WebSocket.OPEN) {
-            console.log("??????????????????????????????")
 
             socket.send(temp)
         }
         socket.addEventListener('open', function (event) {
-            console.log("??????????????????????????????")
 
             socket.send(temp)
         });
 
     }
     update() {
-
+        
 
         if (mapaHas == false) {
             this.add.text(window.innerWidth / 1000, window.innerHeight * 0.2, "czekamy na innego gracza ", { fontSize: "35px" }).setOrigin(0.5)
+            
             socket.onmessage = function (event) {
-                console.log(event.data);
                 let jsn = JSON.parse(event.data)
                 if (mapaHas === false) {
-                    console.log(event.data);
                     if (mapaHas === false) {
-                        console.log(event.data);
-                        console.log(jsn + ' ======================')
                         if (jsn.map != "") {
+
                             const playersArrary = JSON.parse(event.data).playersIdArrary
                             if (playersArrary[0].id == id) {
                                 actualX = playersArrary[0].x
@@ -94,25 +85,22 @@ class LoadingScene extends Phaser.Scene {
                                 actualX = playersArrary[1].x
                                 actualY = playersArrary[1].y
                             }
-                            console.log("playersIdArrary:" + playersArrary[1])
                             level = JSON.parse(JSON.parse(jsn.map))
                             dimensionsx = jsn.dimensionsx
                             dimensionsy = jsn.dimensionsy
                             opis = jsn.opis
-                            idgame = jsn.idgame
                             difficulty = jsn.difficulty
                             mapaHas = true
-
+                            
+                         idgame = jsn.idgame
                             let temp = '{"type":"playing","idGame":"' + idgame + '","idPlayer":"' + id + '"}';
                             socket.send(temp)
                         }
                     }
                 } else if (jsn.mess != '') {
                     if (jsn.mess == 'wait') {
-                        console.log('czekamy')
 
                     } else if (jsn.mess == 'start') {
-                        console.log('startuejmy')
                         timeStart=jsn.timeStart
                         start = true
                     }
@@ -123,7 +111,7 @@ class LoadingScene extends Phaser.Scene {
         }
         if (mapaHas && start == false) {
             this.add.text(window.innerWidth / 1000, window.innerHeight * 0.1, "1/2", { fontSize: "35px" }).setOrigin(0.5)
-
+            this.add.text(window.innerWidth / 1000, window.innerHeight * 0.4, "idgry:"+idgame, { fontSize: "35px" }).setOrigin(0.5)
         }
         if (mapaHas && start) {
             mapaHas = ""
@@ -294,7 +282,6 @@ class Game extends Phaser.Scene {
     }
     podniesItem(w, group) {
         game.scene.start("KoniecGry");
-        console.log(group.frame.name); a
         podniesItem.visible = true;
     }
     update() {
@@ -329,21 +316,18 @@ class Game extends Phaser.Scene {
         // if (actualX != player.body.position.x || actualY != player.body.position.y)
         if (Math.abs(actualX - player.body.position.x) > 16 || Math.abs(actualY - player.body.position.y) > 16) {
             let abc = '{"type":"changeposition","name":"' + idgame + '","id":"' + id + '","x":"' + player.body.position.x + '","y":"' + player.body.position.y + '"}'
-            console.log(abc)
+           
             socket.send(abc)
             actualX = player.body.position.x
             actualY = player.body.position.y
         }
         socket.onmessage = function (event) {
-            // console.log("....................................");
-            console.log(" dane wejsciopwe " + event.data);
 
             let changexyval = JSON.parse(event.data)
             if (changexyval.type == "endGame") {
 
                 game.scene.start("KoniecGry");
             } else {
-                console.log(" json ons " + changexyval);
                 changexyval.forEach(element => {
                     if (element.id != id) {
                         player2.setPosition(element.x, element.y);
