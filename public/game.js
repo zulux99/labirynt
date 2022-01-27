@@ -250,21 +250,22 @@ class Game extends Phaser.Scene {
                     && layer.getTileAt(tile.x + 1, tile.y).index != 0
                     && layer.getTileAt(tile.x, tile.y + 1).index != 0
                     && layer.getTileAt(tile.x, tile.y - 1).index != 0
-                    ||
-                    layer.getTileAt(tile.x - 1, tile.y).index != 0
-                    && layer.getTileAt(tile.x + 1, tile.y).index == 0
-                    && layer.getTileAt(tile.x, tile.y + 1).index != 0
-                    && layer.getTileAt(tile.x, tile.y - 1).index != 0
-                    ||
+                    // ||
+                    // layer.getTileAt(tile.x - 1, tile.y).index != 0
+                    // && layer.getTileAt(tile.x + 1, tile.y).index == 0
+                    // && layer.getTileAt(tile.x, tile.y + 1).index != 0
+                    // && layer.getTileAt(tile.x, tile.y - 1).index != 0
+                    // ||
                     // layer.getTileAt(tile.x - 1, tile.y).index != 0
                     // && layer.getTileAt(tile.x + 1, tile.y).index != 0
                     // && layer.getTileAt(tile.x, tile.y + 1).index == 0
                     // && layer.getTileAt(tile.x, tile.y - 1).index != 0
                     // ||
-                    layer.getTileAt(tile.x - 1, tile.y).index != 0
-                    && layer.getTileAt(tile.x + 1, tile.y).index != 0
-                    && layer.getTileAt(tile.x, tile.y + 1).index != 0
-                    && layer.getTileAt(tile.x, tile.y - 1).index == 0) {
+                    // layer.getTileAt(tile.x - 1, tile.y).index != 0
+                    // && layer.getTileAt(tile.x + 1, tile.y).index != 0
+                    // && layer.getTileAt(tile.x, tile.y + 1).index != 0
+                    // && layer.getTileAt(tile.x, tile.y - 1).index == 0
+                    ) {
                     itemy.create(tile.x * 32 + 16, tile.y * 32 + 16, "wszystkieModele", 500);
                     // potwory.create(tile.x * 32 + 16, tile.y * 32 + 16, "wszystkieModele", 5);
                 }
